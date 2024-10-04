@@ -51,7 +51,16 @@ void controlerButtons() {
 }
 
 void initialize2() {
-  test();
+  picker::render();
+
+  while (true) {
+    if (autonButton.get_new_press()) {
+      picker::next();
+    }
+    picker::getAuton();
+    pros::delay(100);
+  }
+
   return;
   // pros::delay(500);
   chassis.opcontrol_curve_buttons_toggle(false);
@@ -88,22 +97,7 @@ void initialize2() {
 
   // pros::screen::print(pros::text_format_e_t::E_TEXT_MEDIUM_CENTER, 1, "Loaded background! S: %zu",pixelData.size());
 
-  // // pros::screen::print(pros::TEXT_MEDIUM, 3, "Seconds Passed: %3d", i++);
-
-  // printf("Drawing picture %zu", pixelData.size());
-  // for (std::size_t y = 0; y < pixelData.size(); y++) {
-  //     for (std::size_t x = 0; x < pixelData[y].size(); x++) {
-  //         // printf("Pixel at (%zu, %zu): %u\n", y, x, pixelData[y][x]); // Print pixelData
-  //         pros::screen::set_pen(pixelData[y][x]); // Set pen color to pixel value
-  //         pros::screen::print(pros::text_format_e_t::E_TEXT_MEDIUM_CENTER, 3, "Pixel at (%zu, %zu): %u\n", y, x, pixelData[y][x]);
-  //         pros::screen::draw_pixel(x, y); // Draw pixel at (x, y)
-  //         pros::delay(100);
-  //     }
-  // }
-  // lv_obj_align(myLabel, NULL, LV_ALIGN_BOTTOM_LEFT, 10, 0); //set the position to center
-
-  // pros::lcd::clear();
-  // pros::lcd::set_text(0, "My custom LLEMU text!");
+  // // pros::screen::print(pros::TEXT_MEDIUM, 3, "Secon
   // ez::as::initialize();
   master.rumble(".");
 }
@@ -115,13 +109,28 @@ void initialize() {
 void disabled() {}
 void competition_initialize() {}
 
+using AutonFunction = void(*)();
+std::vector<std::vector<AutonFunction>> rAutons = {
+  {auton::blue_pos, auton::blue_neg}, // 0 (0-1)
+  {auton::red_pos, auton::red_neg}, // 1 (0-1)
+  {auton::skillsV2} // 2 (0)
+};
+
 void autonomous() {
   chassis.pid_targets_reset();
   chassis.drive_imu_reset();
   chassis.drive_sensor_reset();
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
 
-  ez::as::auton_selector.selected_auton_call();
+  // ez::as::auton_selector.selected_auton_call();
+  std::vector<uint16_t> auton = picker::getAuton();
+  // rAutons[auton[0]][auton[1]]();
+
+  if (auton.size() == 2 && auton[0] < rAutons.size() && auton[1] < rAutons[auton[0]].size()) {
+    rAutons[auton[0]][auton[1]]();  // Call the function
+  } else {
+    std::cerr << "Invalid auton selection!" << std::endl;
+  }
 }
 
 void opcontrol() {

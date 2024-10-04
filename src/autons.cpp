@@ -6,7 +6,6 @@ int TURN_SPEED = 90/2;
 int SWING_SPEED = 90/2;
 
 void auton::default_constants() {
-  pros::lcd::clear();
   master.clear();
   chassis.pid_heading_constants_set(11, 0, 20);
   chassis.pid_drive_constants_set(20, 0, 100);
