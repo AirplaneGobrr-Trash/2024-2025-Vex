@@ -8,8 +8,8 @@ ez::Drive chassis({-18, 19, -20}, {8, -9, 10}, 11, 2.75, 450);
 
 pros::Controller masterController(CONTROLLER_MASTER);
 
-pros::Motor liftMotor(2, pros::v5::MotorGear::green, pros::v5::MotorUnits::degrees);
-pros::Motor intakeMotor(-4, pros::v5::MotorGear::green, pros::v5::MotorUnits::degrees);
+pros::Motor intakeMotor(4, pros::v5::MotorGear::green, pros::v5::MotorUnits::degrees);
+pros::Motor twoBar(5, pros::v5::MotorGear::red, pros::v5::MotorUnits::degrees);
 pros::adi::DigitalOut goalGrab('H');
 pros::adi::DigitalOut ringGrab('B');
 pros::adi::DigitalIn autonButton('G');
@@ -24,14 +24,19 @@ void controlerButtons() {
     }
 
     if (masterController.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1)) {
-      liftMotor.move(127);
       intakeMotor.move(127);
     } else if (masterController.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2)) {
-      liftMotor.move(-127);
       intakeMotor.move(-127);
     } else {
-      liftMotor.brake();
       intakeMotor.brake();
+    }
+
+    if (masterController.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A)) {
+      twoBar.move(127);
+    } else if (masterController.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B)) {
+      twoBar.move(-127);
+    } else {
+      twoBar.brake();
     }
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1)) {
@@ -53,15 +58,15 @@ void controlerButtons() {
 void initialize2() {
   picker::render();
 
-  while (true) {
-    if (autonButton.get_new_press()) {
-      picker::next();
-    }
-    picker::getAuton();
-    pros::delay(100);
-  }
+  // while (true) {
+  //   if (autonButton.get_new_press()) {
+  //     picker::next();
+  //   }
+  //   picker::getAuton();
+  //   pros::delay(100);
+  // }
 
-  return;
+  // return;
   // pros::delay(500);
   chassis.opcontrol_curve_buttons_toggle(false);
   chassis.opcontrol_drive_activebrake_set(0);
@@ -88,8 +93,8 @@ void initialize2() {
   // ez::as::page_down();
 
   chassis.initialize();
-  pros::screen::erase();
-  pros::screen::set_pen(0x00B0E0E6);
+  // pros::screen::erase();
+  // pros::screen::set_pen(0x00B0E0E6);
   // pros::screen::print(pros::text_format_e_t::E_TEXT_MEDIUM_CENTER, 0, "Loading background?");
   // printf("Loading background");
   // // std::vector<std::vector<std::uint32_t>> pixelData = pic::background();
@@ -104,6 +109,7 @@ void initialize2() {
 
 void initialize() {
   initialize2();
+  twoBar.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 }
 
 void disabled() {}
@@ -135,6 +141,7 @@ void autonomous() {
 
 void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
+  twoBar.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   pros::Task::create(controlerButtons);
 
   chassis.pid_tuner_print_brain_set(true);

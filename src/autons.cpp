@@ -61,12 +61,12 @@ void turn(bool flipped, int degrees){
 
 void intakeSpin(int voltage) {
   intakeMotor.move(voltage);
-  liftMotor.move(voltage);
+  // liftMotor.move(voltage);
 }
 
 void intakeBreak() {
   intakeMotor.brake();
-  liftMotor.brake();
+  // liftMotor.brake();
 }
 
 void skills(bool flip) {
