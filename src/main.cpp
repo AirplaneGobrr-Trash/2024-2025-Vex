@@ -2,14 +2,23 @@
 
 #include "autons.hpp"
 #include "screen.hpp"
+#include "utils.hpp"
 // OkapiLib?
 
-ez::Drive chassis({-18, 19, -20}, {8, -9, 10}, 11, 2.75, 450);
+// Drive setup
+ez::Drive chassis({16,-17,-18}, {-12,13,14}, 11, 2.75, 450);
 
+// Controller setup
 pros::Controller masterController(CONTROLLER_MASTER);
 
+// Motors
 pros::Motor intakeMotor(4, pros::v5::MotorGear::green, pros::v5::MotorUnits::degrees);
-pros::Motor twoBar(5, pros::v5::MotorGear::red, pros::v5::MotorUnits::degrees);
+pros::Motor twoBar(3, pros::v5::MotorGear::red, pros::v5::MotorUnits::degrees);
+
+// Rations
+pros::Rotation twoBarRot(7);
+
+// 3 Wire ports
 pros::adi::DigitalOut goalGrab('H');
 pros::adi::DigitalOut ringGrab('B');
 pros::adi::DigitalIn autonButton('G');
@@ -39,11 +48,16 @@ void controlerButtons() {
       twoBar.brake();
     }
 
+    if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP)) {
+      utils::cataGotoAngle(7500, 127/2, false, twoBarRot, twoBar, 10);
+    }
+
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1)) {
       goalGrab.set_value(1);
     } else if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2)) {
       goalGrab.set_value(0);
     }
+
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_LEFT)) {
       ringGrab.set_value(1);
