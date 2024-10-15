@@ -1,9 +1,9 @@
 #include "main.h"
 
 // These are out of 127
-int DRIVE_SPEED = 80;
-int TURN_SPEED = 90/2;
-int SWING_SPEED = 90/2;
+int DRIVE_SPEED = 115;
+int TURN_SPEED = 90;
+int SWING_SPEED = 90;
 
 void auton::default_constants() {
   master.clear();
@@ -297,7 +297,7 @@ void auton::skillsGood() {
   // idk
 }
 
-void auton::neg(bool flipped) {
+void neg_old(bool flipped) {
   chassis.pid_drive_set(-36, DRIVE_SPEED);
   chassis.pid_wait_until(-25_in);
   chassis.pid_speed_max_set(30);
@@ -351,6 +351,12 @@ void auton::neg(bool flipped) {
   if (!flipped) ringGrab.set_value(1);
 
   turn(flipped, -210);
+}
+
+void auton::neg(bool flipped) {
+  // turn(flipped, )
+  chassis.pid_swing_set(ez::RIGHT_SWING, -45_deg, SWING_SPEED, 45);
+  chassis.pid_wait();
 }
 
 void auton::pos_2(bool flipped) {

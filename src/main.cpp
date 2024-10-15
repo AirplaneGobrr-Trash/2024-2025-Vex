@@ -6,24 +6,25 @@
 // OkapiLib?
 
 // Drive setup
-ez::Drive chassis({16,-17,-18}, {-12,13,14}, 11, 2.75, 450);
+ez::Drive chassis({16,-17,-18}, {-12,13,14}, 20, 2.75, 450);
 
 // Controller setup
 pros::Controller masterController(CONTROLLER_MASTER);
 
 // Motors
 pros::Motor intakeMotor(4, pros::v5::MotorGear::green, pros::v5::MotorUnits::degrees);
-pros::Motor twoBar(3, pros::v5::MotorGear::red, pros::v5::MotorUnits::degrees);
+pros::Motor twoBar(-3, pros::v5::MotorGear::red, pros::v5::MotorUnits::degrees);
 
 // Rations
-pros::Rotation twoBarRot(7);
+pros::Rotation twoBarRot(1);
 
 // 3 Wire ports
-pros::adi::DigitalOut goalGrab('H');
+pros::adi::DigitalOut goalGrab('A');
 pros::adi::DigitalOut ringGrab('B');
-pros::adi::DigitalIn autonButton('G');
+pros::adi::DigitalIn autonButton('C');
 
 bool grabbingRing = false;
+int twoBarSpeed = 90;
 
 void controlerButtons() {
   while (true) {
@@ -41,15 +42,15 @@ void controlerButtons() {
     }
 
     if (masterController.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A)) {
-      twoBar.move(127);
+      twoBar.move(twoBarSpeed);
     } else if (masterController.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B)) {
-      twoBar.move(-127);
+      twoBar.move(-twoBarSpeed);
     } else {
       twoBar.brake();
     }
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP)) {
-      utils::cataGotoAngle(7500, 127/2, false, twoBarRot, twoBar, 10);
+      utils::cataGotoAngle(2170, twoBarSpeed, false, twoBarRot, twoBar, 10);
     }
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1)) {
@@ -69,16 +70,22 @@ void controlerButtons() {
   }
 }
 
+void autonSelc(){
+  while (true) {
+    if (pros::competition::is_autonomous()) { // Disable buttons if we are running auton
+      pros::delay(100);
+      continue;
+    } 
+    if (autonButton.get_new_press()) {
+      picker::next();
+    }
+    picker::getAuton();
+    pros::delay(100);
+  }
+}
+
 void initialize2() {
   picker::render();
-
-  // while (true) {
-  //   if (autonButton.get_new_press()) {
-  //     picker::next();
-  //   }
-  //   picker::getAuton();
-  //   pros::delay(100);
-  // }
 
   // return;
   // pros::delay(500);
@@ -106,7 +113,10 @@ void initialize2() {
   // ez::as::page_up();
   // ez::as::page_down();
 
-  chassis.initialize();
+  // chassis.initialize(false);
+  chassis.opcontrol_curve_sd_initialize();
+  chassis.drive_imu_calibrate(false);
+  chassis.drive_sensor_reset();
   // pros::screen::erase();
   // pros::screen::set_pen(0x00B0E0E6);
   // pros::screen::print(pros::text_format_e_t::E_TEXT_MEDIUM_CENTER, 0, "Loading background?");
@@ -118,7 +128,8 @@ void initialize2() {
 
   // // pros::screen::print(pros::TEXT_MEDIUM, 3, "Secon
   // ez::as::initialize();
-  master.rumble(".");
+  master.rumble("-");
+  pros::Task::create(autonSelc);
 }
 
 void initialize() {
@@ -131,9 +142,9 @@ void competition_initialize() {}
 
 using AutonFunction = void(*)();
 std::vector<std::vector<AutonFunction>> rAutons = {
-  {auton::blue_pos, auton::blue_neg}, // 0 (0-1)
-  {auton::red_pos, auton::red_neg}, // 1 (0-1)
-  {auton::skillsV2} // 2 (0)
+  {auton::blue_pos, auton::blue_neg}, // 0 (0-1) - Blue
+  {auton::red_pos, auton::red_neg}, // 1 (0-1) - Red
+  {auton::skillsV2} // 2 (0) - Skills
 };
 
 void autonomous() {
@@ -144,7 +155,11 @@ void autonomous() {
 
   // ez::as::auton_selector.selected_auton_call();
   std::vector<uint16_t> auton = picker::getAuton();
-  // rAutons[auton[0]][auton[1]]();
+  rAutons[auton[0]][auton[1]]();
+  return;
+
+  printf("%u\n", (unsigned int)auton[0]);
+  printf("%u\n", (unsigned int)auton[1]);
 
   if (auton.size() == 2 && auton[0] < rAutons.size() && auton[1] < rAutons[auton[0]].size()) {
     rAutons[auton[0]][auton[1]]();  // Call the function

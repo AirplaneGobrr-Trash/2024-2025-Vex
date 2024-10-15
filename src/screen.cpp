@@ -150,8 +150,8 @@ void picker::render(void) {
     lv_obj_t * img = lv_img_create(lv_scr_act());  // Create an image object on the active screen
 
     /* Set the image source */
-    lv_img_set_src(img, &Spades_No_BG_Small);  // Use the image data declared in SpadesBG.c
-    // lv_img_set_src(img, "/usd/Spades_No_BG_Small.png");
+    //lv_img_set_src(img, &Spades_No_BG_Small);  // Use the image data declared in SpadesBG.c
+    lv_img_set_src(img, "/usd/Spades_No_BG_Small.png");
     lv_obj_align(img, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
 }
 
