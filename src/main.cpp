@@ -5,30 +5,76 @@
 #include "utils.hpp"
 // OkapiLib?
 
-// Drive setup
-ez::Drive chassis({16,-17,-18}, {-12,13,14}, 20, 2.75, 450);
+#include "gobals.hpp"
 
-// Controller setup
-pros::Controller masterController(CONTROLLER_MASTER);
+using AutonFunction = void(*)();
+std::vector<std::vector<AutonFunction>> rAutons = {
+  {auton::blue_pos, auton::blue_neg}, // 0 (0-1) - Blue
+  {auton::red_pos, auton::red_neg}, // 1 (0-1) - Red
+  {auton::skillsV2} // 2 (0) - Skills
+};
 
-// Motors
-pros::Motor intakeMotor(4, pros::v5::MotorGear::green, pros::v5::MotorUnits::degrees);
-pros::Motor twoBar(-3, pros::v5::MotorGear::red, pros::v5::MotorUnits::degrees);
-
-// Rations
-pros::Rotation twoBarRot(1);
-
-// 3 Wire ports
-pros::adi::DigitalOut goalGrab('A');
-pros::adi::DigitalOut ringGrab('B');
-pros::adi::DigitalIn autonButton('C');
+std::vector<std::vector<std::string>> rAutonsNames = {
+  {"blue_pos", "blue_neg"}, // 0 (0-1) - Blue
+  {"red_pos", "red_neg"}, // 1 (0-1) - Red
+  {"skillsV2"} // 2 (0) - Skills
+};
 
 bool grabbingRing = false;
 int twoBarSpeed = 90;
+bool runningAuton = false;
 
-void controlerButtons() {
+void lift_wait() {
+  while (liftPID.exit_condition({twoBar}, true) == ez::RUNNING) {
+    pros::delay(ez::util::DELAY_TIME);
+  }
+}
+
+void lift_task() {
+  int resetValue = 35000;
   while (true) {
-    if (pros::competition::is_autonomous()) { // Disable buttons if we are running auton
+    // pros::delay(ez::util::DELAY_TIME);  
+    int angle = twoBarRot.get_position();
+    if (angle > resetValue) angle = 0;
+    int wantSpeed = liftPID.compute(angle);
+    twoBar.move(wantSpeed);
+    pros::delay(ez::util::DELAY_TIME);
+  }
+}
+
+void controllerButtons2() {
+  while (true) {
+    if (pros::competition::is_autonomous() || runningAuton) { // Disable buttons if we are running auton
+      pros::delay(100);
+      continue;
+    }
+
+    if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP)) {
+      // utils::cataGotoAngle(2500, twoBarSpeed, false, twoBarRot, twoBar, 10);
+      liftPID.target_set(2900);
+      lift_wait();
+      master.rumble("-");
+    }
+
+    if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_RIGHT)) {
+      // utils::cataGotoAngle(12500, twoBarSpeed/1.4, false, twoBarRot, twoBar, 10);
+      liftPID.target_set(13500);
+      lift_wait();
+      master.rumble("-");
+    }
+
+    if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B)) {
+      // utils::cataGotoAngle(12500, twoBarSpeed/1.4, false, twoBarRot, twoBar, 10);
+      liftPID.target_set(1000);
+      lift_wait();
+      master.rumble("-");
+    }
+  }
+}
+
+void controllerButtons() {
+  while (true) {
+    if (pros::competition::is_autonomous() || runningAuton) { // Disable buttons if we are running auton
       pros::delay(100);
       continue;
     }
@@ -41,24 +87,11 @@ void controlerButtons() {
       intakeMotor.brake();
     }
 
-    if (masterController.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A)) {
-      twoBar.move(twoBarSpeed);
-    } else if (masterController.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B)) {
-      twoBar.move(-twoBarSpeed);
-    } else {
-      twoBar.brake();
-    }
-
-    if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP)) {
-      utils::cataGotoAngle(2170, twoBarSpeed, false, twoBarRot, twoBar, 10);
-    }
-
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1)) {
       goalGrab.set_value(1);
     } else if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2)) {
       goalGrab.set_value(0);
     }
-
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_LEFT)) {
       ringGrab.set_value(1);
@@ -72,14 +105,15 @@ void controlerButtons() {
 
 void autonSelc(){
   while (true) {
-    if (pros::competition::is_autonomous()) { // Disable buttons if we are running auton
+    if (pros::competition::is_autonomous() || runningAuton) { // Disable buttons if we are running auton
       pros::delay(100);
       continue;
     } 
     if (autonButton.get_new_press()) {
       picker::next();
     }
-    picker::getAuton();
+    std::vector<uint16_t> auton = picker::getAuton();
+    master.print(0,0,"%s %u %u", rAutonsNames[auton[0]][auton[1]], auton[0], auton[1]);
     pros::delay(100);
   }
 }
@@ -94,6 +128,7 @@ void initialize2() {
   chassis.opcontrol_curve_default_set(1, 1);
   ringGrab.set_value(0);
   goalGrab.set_value(0);
+  twoBarRot.reset_position();
 
   auton::default_constants();
 
@@ -133,21 +168,21 @@ void initialize2() {
 }
 
 void initialize() {
-  initialize2();
+  liftPID.constants_set(0.03, 0, 0.04);
+  liftPID.exit_condition_set(80, 2, 250, 10, 500, 500);
   twoBar.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+  initialize2();
 }
 
-void disabled() {}
+void disabled() {
+  runningAuton = false;
+}
 void competition_initialize() {}
 
-using AutonFunction = void(*)();
-std::vector<std::vector<AutonFunction>> rAutons = {
-  {auton::blue_pos, auton::blue_neg}, // 0 (0-1) - Blue
-  {auton::red_pos, auton::red_neg}, // 1 (0-1) - Red
-  {auton::skillsV2} // 2 (0) - Skills
-};
-
 void autonomous() {
+  twoBar.brake();
+  runningAuton = true;
   chassis.pid_targets_reset();
   chassis.drive_imu_reset();
   chassis.drive_sensor_reset();
@@ -166,12 +201,16 @@ void autonomous() {
   } else {
     std::cerr << "Invalid auton selection!" << std::endl;
   }
+  runningAuton = false;
 }
 
 void opcontrol() {
+  runningAuton = false;
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
   twoBar.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  pros::Task::create(controlerButtons);
+  pros::Task::create(controllerButtons);
+  pros::Task::create(controllerButtons2);
+   pros::Task::create(lift_task);
 
   chassis.pid_tuner_print_brain_set(true);
 
@@ -184,7 +223,7 @@ void opcontrol() {
       // Trigger the selected autonomous routine
       if (master.get_digital(DIGITAL_B) && master.get_digital(DIGITAL_DOWN)) {
         autonomous();
-        // chassis.drive_brake_set(MOTOR_BRAKE_COAST);
+        chassis.drive_brake_set(MOTOR_BRAKE_COAST);
       }
     }
 

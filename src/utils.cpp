@@ -20,6 +20,13 @@ bool utils::cataGotoAngle(int angle, int speed, bool stopAtWeridAngle, pros::Rot
             return true;
         }
 
+        // Override
+        if (master.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X)) {
+            motor.brake();
+            notThere = false;
+            return true;
+        }
+
         int cataAngle = rot.get_angle();
         // printf("AngleGoto: %ld \n", cataAngle);
         if (cataAngle > resetValue) {
