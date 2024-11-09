@@ -13,7 +13,7 @@ void auton::default_constants() {
   chassis.pid_turn_constants_set(3, 0.05, 20, 15);
   chassis.pid_swing_constants_set(6, 0, 65);
 
-  chassis.pid_turn_exit_condition_set(80_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
+  chassis.pid_turn_exit_condition_set(80_ms, 3_deg, 250_ms, 7_deg, 200_ms, 200_ms);
   chassis.pid_swing_exit_condition_set(80_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
   chassis.pid_drive_exit_condition_set(80_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
 
@@ -56,7 +56,6 @@ void auton::cali() {
 void turn(bool flipped, int degrees) {
   if (flipped) degrees = degrees * -1;
   chassis.pid_turn_set(degrees, TURN_SPEED);
-  chassis.pid_wait();
 }
 
 void swing(bool flipped, int degrees, int speed) {
@@ -77,499 +76,1000 @@ void intakeBreak() {
   // liftMotor.brake();
 }
 
-void skills(bool flip) {
-  DRIVE_SPEED = 115;
-  // Turn to (-600, -600)
-  // chassis.pid_turn_set(0, TURN_SPEED);
-  // chassis.pid_wait();
-  turn(flip, 0);
-
-  // Drive to (-600, -600)
-  chassis.pid_drive_set(24_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  // Turn to (0, -1500)
-  // chassis.pid_turn_set(55, TURN_SPEED);
-  // chassis.pid_wait();
-  turn(flip, 55);
-
-  // Drive to (0, -1500)
-  chassis.pid_drive_set(38_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  // Turn to (-600, -1200) & (-1200, -1200)
-  // chassis.pid_turn_set(190, TURN_SPEED);
-  // chassis.pid_wait();
-  turn(flip, 190);
-
-  // Drive to (-600, -1200) & (-1200, -1200)
-  chassis.pid_drive_set(40_in, DRIVE_SPEED);
-  chassis.pid_wait_until(20_in);
-  chassis.pid_speed_max_set(DRIVE_SPEED / 3);
-  chassis.pid_wait();
-
-  // Turn to (-1500, -1200)
-  // chassis.pid_turn_set(185, TURN_SPEED);
-  // chassis.pid_wait();
-  turn(flip, 185);
-
-  // Drive to (-1500, -1200)
-  chassis.pid_drive_set(20_in, DRIVE_SPEED / 4);
-  chassis.pid_wait();
-
-  // Goal: (-1200, -1500)
-  chassis.pid_drive_set(-24_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  // Turn to (-1200, -1500)
-  // chassis.pid_turn_set(130, TURN_SPEED);
-  // chassis.pid_wait();
-  turn(flip, 130);
-
-  // Drive to (-1200, -1500)
-  chassis.pid_drive_set(16_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  // Back up cus we have a "full" goal (hopefully)
-  chassis.pid_drive_set(-12_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  // Face coner
-  // chassis.pid_turn_set(325, TURN_SPEED);
-  // chassis.pid_wait();
-  turn(flip, 325);
-
-  // Drop goal
-  chassis.pid_drive_set(-26_in, DRIVE_SPEED);
-  chassis.pid_wait_until(-12_in);
-  goalGrab.set_value(0);
-  intakeSpin(-127);
-  chassis.pid_wait();
-
-  intakeBreak();
-
-  chassis.pid_drive_set(8_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  // chassis.pid_turn_set(90, TURN_SPEED);
-  // chassis.pid_wait();
-  turn(flip, -90);
-}
-
-void auton::skillsV2() {
+void auton::skills3() {
+  DRIVE_SPEED = 90;
   intakeSpin(127);
   pros::delay(1000);
   intakeBreak();
 
-  chassis.pid_drive_set(13_in, DRIVE_SPEED);
+  chassis.pid_drive_set(12_in, DRIVE_SPEED, false, true);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(-90, TURN_SPEED);
+  // Turn to (-1200, -600) - goal
+  chassis.pid_turn_set(90, TURN_SPEED);
   chassis.pid_wait();
 
-  // Grab goal
-  chassis.pid_drive_set(-23_in, DRIVE_SPEED);
-  chassis.pid_wait_until(-14_in);
+  // Drive to (-1200, -600) - goal
+  chassis.pid_drive_set(-22_in, DRIVE_SPEED, false, true);
+  chassis.pid_wait_until(-4_in);
   chassis.pid_speed_max_set(30);
+  chassis.pid_wait_until(-16_in);
+  goalGrab.set_value(1);
   chassis.pid_wait();
 
-  goalGrab.set_value(1);
-  pros::delay(100);
+  // turn (-600, -600) - ring
+  chassis.pid_turn_set(0, TURN_SPEED);
+  chassis.pid_wait();
 
   intakeSpin(127);
 
-  skills(false);
+  // drive (-600, -600) - ring
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
+  chassis.pid_wait();
 
-  chassis.pid_drive_set(-76_in, DRIVE_SPEED);  // 78
-  chassis.pid_wait_until(-58_in);
-  chassis.pid_speed_max_set(25);
+  // turn (-600, -1200) - ring
+  chassis.pid_turn_set(-90, TURN_SPEED);
+  chassis.pid_wait();
+
+  // drive (-600, -1200) - ring
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // turn (-1200, -1200) - ring
+  chassis.pid_turn_set(-180, TURN_SPEED);
+  chassis.pid_wait();
+
+  // drive (-1200, -1200) - ring
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(1000);
+  
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // backup from (-1200, -1200) to (-1500, -1200)
+  chassis.pid_drive_set(-14_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // turn (-1500, -1200) - ring
+  chassis.pid_turn_set(-90, TURN_SPEED);
+  chassis.pid_wait();
+
+  // drive (-1500, -1200) - ring
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // back up to put goal in coner
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // face coner with goal
+  chassis.pid_turn_set(-315, TURN_SPEED);
+  chassis.pid_wait();
+
+  // drive and drop goal
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED);
+  chassis.pid_wait_until(-2);
+  goalGrab.set_value(0);
+  chassis.pid_wait();
+
+  intakeBreak();
+
+  chassis.pid_drive_set(4_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(-88, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-76_in, DRIVE_SPEED);
+  chassis.pid_wait_until(-50_in);
+  chassis.pid_speed_max_set(30);
   chassis.pid_wait_until(-70_in);
   goalGrab.set_value(1);
   chassis.pid_wait();
 
-  intakeSpin(127);
-  skills(true);
-
-  pros::delay(1000);
-  intakeBreak();
-}
-
-// https://api.vex.com/vr/home/playgrounds/v5rc_high_stakes/gps_coordinates.html
-void auton::skillsGood() {
-  intakeSpin(127);
-  pros::delay(1000);
-  intakeBreak();
-
-  chassis.pid_drive_set(13_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(-90, TURN_SPEED);
-  chassis.pid_wait();
-
-  // Grab goal
-  chassis.pid_drive_set(-23_in, DRIVE_SPEED);
-  chassis.pid_wait_until(-12_in);
-  chassis.pid_speed_max_set(30);
-  chassis.pid_wait();
-
-  goalGrab.set_value(1);
-  pros::delay(100);
-
-  intakeSpin(127);
-
-  // Turn to (-600, -600)
+  // turn 
   chassis.pid_turn_set(0, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(24_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  // Turn to (-600, -1200)
-  chassis.pid_turn_set(90, TURN_SPEED / 1.1);
-  chassis.pid_wait();
+  intakeSpin(127);
 
   chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  // Turn to (-1200, -1200) & (-1500, -1200)
-  chassis.pid_turn_set(180, TURN_SPEED / 1.1);
+  chassis.pid_turn_set(90, TURN_SPEED);
   chassis.pid_wait();
 
-  // Hit wall
-  master.print(0, 0, "Hit wall???");
-  chassis.pid_drive_set(50_in, DRIVE_SPEED / 2.2);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(120, TURN_SPEED);
+  chassis.pid_turn_set(180, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(10_in, DRIVE_SPEED);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  // Turn to (-1200, -1500) & (0, -1500)
-  chassis.pid_turn_set(5, TURN_SPEED);
+  pros::delay(1000);
+
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(53_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-14_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(-5, TURN_SPEED);
+  chassis.pid_turn_set(90, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-58_in, DRIVE_SPEED);
-  chassis.pid_wait_until(-50_in);
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED);
+  chassis.pid_wait();
+  
+  pros::delay(500);
+
+  chassis.pid_turn_set(315, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-14_in, DRIVE_SPEED);
+  chassis.pid_wait_until(-2);
   goalGrab.set_value(0);
-  intakeBreak();
   chassis.pid_wait();
+
+  intakeBreak();
 
   pros::delay(500);
 
-  chassis.pid_drive_set(5_in, DRIVE_SPEED);
+  chassis.pid_drive_set(4_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(90.5, TURN_SPEED);
+  chassis.pid_turn_set(360, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-92_in, DRIVE_SPEED);
-  chassis.pid_wait_until(-85);
-  chassis.pid_speed_max_set(15);
+  chassis.pid_drive_set(44_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  goalGrab.set_value(1);
+  chassis.pid_turn_set(315, TURN_SPEED);
+  chassis.pid_wait();
 
   intakeSpin(127);
 
-  chassis.pid_turn_set(0, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(26_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(-55, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(50_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(-190, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(24_in, DRIVE_SPEED / 1.5);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(-180, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(56_in, DRIVE_SPEED / 2.2);
-  chassis.pid_wait();
-  // idk
-}
-
-void neg_old(bool flipped) {
-  chassis.pid_drive_set(-36, DRIVE_SPEED);
-  chassis.pid_wait_until(-25_in);
-  chassis.pid_speed_max_set(30);
-  chassis.pid_wait_until(-35_in);
-  goalGrab.set_value(1);
-  chassis.pid_wait();
-
-  // chassis.pid_turn_set(-60, TURN_SPEED);
-  turn(flipped, -60);
-  // chassis.pid_wait();
-
-  intakeSpin(127);
-
-  chassis.pid_drive_set(30_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  // chassis.pid_turn_set(-144, TURN_SPEED);
-  turn(flipped, -150);
-  // chassis.pid_wait();
-
-  chassis.pid_drive_set(10_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(-5_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  // chassis.pid_turn_set(-180, TURN_SPEED);
-  turn(flipped, -175);
-  // chassis.pid_wait();
-
-  chassis.pid_drive_set(9_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(-7_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  // chassis.pid_turn_set(-220, TURN_SPEED);
-  turn(flipped, -220);
-  // chassis.pid_wait();
-
-  chassis.pid_drive_set(22_in, DRIVE_SPEED / 2);
-  chassis.pid_wait_until(12_in);
-  chassis.pid_speed_max_set(15);
-  chassis.pid_wait();
-
-  // chassis.pid_turn_set(-210, TURN_SPEED);
-  turn(flipped, -210);
-  // chassis.pid_wait();
-
-  intakeBreak();
-  if (!flipped) ringGrab.set_value(1);
-
-  turn(flipped, -210);
-}
-
-void auton::neg_2(bool flipped) {
-  // turn(flipped, )
-  // chassis.pid_swing_set(ez::LEFT_SWING, -70_deg, SWING_SPEED, 18);
-  swing(flipped, -70, 20);
-  chassis.pid_wait_quick_chain();
-
-  chassis.pid_drive_set(-0_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  intakeMotor.move(127);
-  pros::delay(1500);
-  intakeMotor.brake();
-
-  turn(flipped, -55);
-
-  chassis.pid_drive_set(10_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  turn(flipped, -240);
-
-  chassis.pid_drive_set(-28_in, DRIVE_SPEED);
-  chassis.pid_wait_until(-14_in);
-  chassis.pid_speed_max_set(DRIVE_SPEED / 3);
-  chassis.pid_wait_until(-26_in);
-  goalGrab.set_value(1);
-  chassis.pid_wait();
-
-  turn(flipped, -25);
-
-  chassis.pid_drive_set(14_in, DRIVE_SPEED);
-  chassis.pid_wait_quick_chain();
-
-  intakeSpin(127);
-
-  // chassis.pid_swing_set(ez::RIGHT_SWING, -90_deg, SWING_SPEED, 8);
-  swing(!flipped, 95, 8);
-  chassis.pid_wait();
-
-  // Middle Right grab
-  chassis.pid_drive_set(2_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_drive_set(-5_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  turn(flipped, -60);
-
-  // Middle Left grab
-  chassis.pid_drive_set(8_in, DRIVE_SPEED);
+  chassis.pid_drive_set(38_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   pros::delay(350);
 
-  chassis.pid_drive_set(-24_in, DRIVE_SPEED);
+  intakeBreak();
+
+  chassis.pid_turn_set(136, TURN_SPEED);
   chassis.pid_wait();
 
-  // chassis.pid_swing_set(ez::LEFT_SWING, 15_deg, SWING_SPEED, 4);
-  swing(flipped, -10, 4);
+  chassis.pid_drive_set(-34_in, DRIVE_SPEED);
+  chassis.pid_wait_until(-20);
+  chassis.pid_speed_max_set(20);
+  chassis.pid_wait_until(-32);
+  goalGrab.set_value(1);
   chassis.pid_wait();
 
-  // Grab werid
-  chassis.pid_drive_set(10_in, DRIVE_SPEED);
+  intakeSpin(127);
+
+  chassis.pid_turn_set(120, TURN_SPEED);
   chassis.pid_wait();
 
-  pros::delay(100);
+  chassis.pid_drive_set(48_in, DRIVE_SPEED);
+  chassis.pid_wait();
 
-  chassis.pid_drive_set(-2_in, DRIVE_SPEED);
+  chassis.pid_turn_set(0, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   pros::delay(1000);
 
-  turn(flipped, -90);
+  chassis.pid_drive_set(14_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-8_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(90, TURN_SPEED);
+
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(225, TURN_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
   goalGrab.set_value(0);
 
-  chassis.pid_drive_set(-4_in, DRIVE_SPEED);
-  chassis.pid_wait_quick_chain();
-
-  chassis.pid_drive_set(-4_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED);
   chassis.pid_wait();
-  
-  
-  turn(flipped, 25);
+
+  intakeBreak();
+}
+
+void removed(){
+   return;
+
+  // Turn to (-600, -1200) - ring
+  chassis.pid_turn_set(-45, TURN_SPEED);
+  chassis.pid_wait();
+
+  intakeSpin(127);
+
+  // Drive to (-600, -1200) - ring
+  chassis.pid_drive_set(36_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // Turn to (0, -1500)
+  chassis.pid_turn_set(-30, TURN_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(500); // this bot can't pick up any rings.
+
+  // Drive to (0, -1500)
+  chassis.pid_drive_set(28_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // Back up from (0, -1500) to (-600, -600)
+  chassis.pid_drive_set(-30_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // Turn to (-600, -600)
+  chassis.pid_turn_set(90, TURN_SPEED);
+  chassis.pid_wait();
+
+  // Drive to (-600, -600)
+  chassis.pid_drive_set(28_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // Turn to (-1200, -1200)
+  chassis.pid_turn_set(230, TURN_SPEED);
+  chassis.pid_wait();
+
+  // Drive to (-1200, -1200)
+  chassis.pid_drive_set(36_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // Turn to (-1500, -1200)
+  chassis.pid_turn_set(180, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
+  chassis.pid_wait();
 
   
+  // Back up from (-1500, -1200) to (-1200, -1500)
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // Turn to (-1200, -1500)
+  chassis.pid_turn_set(270, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(18_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // Line up to put goal in coner
+  chassis.pid_drive_set(-8_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // Turn to coner
+  chassis.pid_turn_set(45, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  goalGrab.set_value(0);
+  intakeSpin(-30);
+
+  chassis.pid_drive_set(8_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
   intakeBreak();
 
-  chassis.pid_drive_set(-40_in, DRIVE_SPEED);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
 }
 
-void pos_2(bool flipped) {
-  chassis.pid_drive_set(-20_in, DRIVE_SPEED);
+void e(){
+    return;
+
+  chassis.pid_turn_set(135, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-24_in, DRIVE_SPEED);
+  chassis.pid_wait();
+  
+  goalGrab.set_value(0);
+  pros::delay(100);
+
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
+  chassis.pid_wait();
+}
+
+void auton::blue_pos2() {
+  bool flipped = false;
+
+  chassis.pid_drive_set(-18, DRIVE_SPEED);
   chassis.pid_wait();
 
   turn(flipped, 45);
+  chassis.pid_wait();
 
-  chassis.pid_drive_set(-18_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-18, DRIVE_SPEED/2);
   chassis.pid_wait_until(-10);
   goalGrab.set_value(1);
   chassis.pid_wait();
 
-  pros::delay(100);
-  intakeSpin(127);
-
-  pros::delay(1000);
-
-  goalGrab.set_value(0);
-  pros::delay(500);
-  intakeBreak();
-
   turn(flipped, 90);
-  intakeSpin(120);
-
-  chassis.pid_drive_set(23_in, DRIVE_SPEED);
   chassis.pid_wait();
-  intakeBreak();
-
-  turn(flipped, 0);
-
-  chassis.pid_drive_set(-17_in, DRIVE_SPEED);
-  chassis.pid_wait_until(-7_in);
-  chassis.pid_speed_max_set(30);
-  chassis.pid_wait();
-
-  goalGrab.set_value(1);
-  pros::delay(500);
-
-  chassis.pid_drive_set(23_in, DRIVE_SPEED);
-  chassis.pid_wait();
+  
   intakeSpin(127);
-
-  turn(flipped, -132);
 
   chassis.pid_drive_set(26_in, DRIVE_SPEED);
-  chassis.pid_wait_until(-10_in);
-  chassis.pid_speed_max_set(5);
   chassis.pid_wait();
-}
 
-void wait(){
-  pros::delay(5000);
+  pros::delay(1000);
   goalGrab.set_value(0);
-}
+  intakeBreak();  
 
-void auton::pos_2(bool flipped) {
-  chassis.pid_drive_set(-6_in, DRIVE_SPEED);
-  chassis.pid_wait_quick_chain();
-
-  swing(!flipped, -35, 12);
-  chassis.pid_wait_quick_chain();
-
-  chassis.pid_drive_set(-16_in, DRIVE_SPEED);
-  chassis.pid_wait_until(-6);
-  chassis.pid_speed_max_set(DRIVE_SPEED/4);
-  chassis.pid_wait_until(-14);
-  goalGrab.set_value(1);
+  turn(flipped, 170);
   chassis.pid_wait();
 
-  swing(flipped, 180, 8);
-  intakeSpin(127);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(190, TURN_SPEED);
-  chassis.pid_wait();
-  
-  pros::delay(2000);
-  
-  goalGrab.set_value(0);
-
-  chassis.pid_drive_set(16_in, DRIVE_SPEED);
+  chassis.pid_drive_set(6_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   ringGrab.set_value(1);
-  intakeBreak();
 
-  pros::delay(500);
+  pros::delay(1000);
 
-  turn(flipped, 90);
+  chassis.pid_drive_set(-24_in, DRIVE_SPEED);
+  chassis.pid_wait();
 
   ringGrab.set_value(0);
 
-  chassis.pid_drive_set(-34_in, DRIVE_SPEED);
+  turn(flipped, 245);
   chassis.pid_wait();
 
-  turn(flipped, 136);
-
-  chassis.pid_drive_set(-14_in, DRIVE_SPEED/2);
+  chassis.pid_drive_set(40_in, DRIVE_SPEED/2);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-2_in, DRIVE_SPEED/2);
+  ringGrab.set_value(1);
+
+  return;
+  chassis.pid_drive_set(-32_in, 200);
+  chassis.pid_wait_quick_chain();
+
+  turn(flipped, 40);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED/3);
   chassis.pid_wait();
+
+  goalGrab.set_value(1);
+
+  pros::delay(200);
+
+  chassis.pid_drive_set(4_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  intakeSpin(127);
+
+  turn(flipped, -40);
+  chassis.pid_wait();
+
+  pros::delay(1200);
+  intakeSpin(-30);
+  goalGrab.set_value(0);
+
+  pros::delay(200);
+
+  intakeSpin(127);
+
+  // Grabs middle ring?
+  chassis.pid_drive_set(16_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(100);
+  intakeBreak();
+
+  turn(flipped, 90);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-18_in, DRIVE_SPEED/2);
+  chassis.pid_wait();
+
+  goalGrab.set_value(1);
+  intakeSpin(127);
+
+  pros::delay(500);
+
+  turn(flipped, 180);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
+  goalGrab.set_value(0);
+
+  chassis.pid_drive_set(14_in, DRIVE_SPEED/2.5);
+  chassis.pid_wait();
+
+  intakeBreak();
 }
 
 void auton::blue_neg() {
-  auton::neg_2(false);
+  bool flipped = false;
+
+  chassis.pid_drive_set(38_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  intakeSpin(127);
+
+  turn(flipped, 35);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(10_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 55);
+  chassis.pid_wait();
+  intakeBreak();
+
+  pros::delay(250);
+
+  chassis.pid_drive_set(-20_in, DRIVE_SPEED/2);
+  chassis.pid_wait_until(-2);
+  chassis.pid_wait_until(-18_in);
+  goalGrab.set_value(1);
+  chassis.pid_wait();
+  intakeSpin(127);
+
+  turn(flipped, 75);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(22_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // 2ED RING turn
+  turn(flipped, 40);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(8_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(250);
+
+  chassis.pid_drive_set(-24_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 90);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(16, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-4, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 180);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(32, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-8, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 295);
+  chassis.pid_wait();
+
+  intakeBreak();
+
+  chassis.pid_drive_set(46, DRIVE_SPEED/2);
+  chassis.pid_wait();
+
+  ringGrab.set_value(1);
+
+  return;
+  chassis.pid_drive_set(-18_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 42);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED/2);
+  chassis.pid_wait();
+
+  goalGrab.set_value(1);
+
+  pros::delay(350);
+
+  turn(flipped, 225);
+  chassis.pid_wait();
+
+  intakeSpin(127);
+
+  chassis.pid_drive_set(26_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
+  chassis.pid_drive_set(-8_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 235);
+  chassis.pid_wait();
+  
+  pros::delay(2000);
+
+  chassis.pid_drive_set(14_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(300);
+
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 320);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 130);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(20_in, DRIVE_SPEED/2);
+  chassis.pid_wait();
+
+  ringGrab.set_value(1);
+
+  turn(flipped, 140);
+  chassis.pid_wait();
 }
 
 void auton::red_neg() {
-  auton::neg_2(true);
-}
+  bool flipped = true;
+  chassis.pid_drive_set(38_in, DRIVE_SPEED);
+  chassis.pid_wait();
 
-void auton::blue_pos() {
-  auton::pos_2(false);
+  intakeSpin(127);
+
+  turn(flipped, 25);
+  chassis.pid_wait();
+
+  // grab ring
+  chassis.pid_drive_set(10_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 55);
+  chassis.pid_wait();
+  intakeBreak();
+
+  pros::delay(250);
+
+  // pick up goal
+  chassis.pid_drive_set(-20_in, DRIVE_SPEED/2);
+  chassis.pid_wait_until(-2);
+  chassis.pid_wait_until(-18_in);
+  goalGrab.set_value(1);
+  chassis.pid_wait();
+  intakeSpin(127);
+
+  turn(flipped, 70);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 40);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(2_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(250);
+
+  chassis.pid_drive_set(-20_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 90);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(16, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-2, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 180);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(37, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-12, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 300);
+  chassis.pid_wait();
+
+  intakeBreak();
+
+  chassis.pid_drive_set(50, DRIVE_SPEED/2);
+  chassis.pid_wait();
+  
+
+  return;
+  chassis.pid_drive_set(-14_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped,35);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-18_in, DRIVE_SPEED/1.5);
+  chassis.pid_wait_until(-14_in);
+  goalGrab.set_value(1);
+  chassis.pid_wait();
+
+  turn(flipped, 220);
+  chassis.pid_wait();
+
+  intakeSpin(127);
+
+  chassis.pid_drive_set(28_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-8_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 235);
+  chassis.pid_wait();
+  
+  pros::delay(2000);
+
+  chassis.pid_drive_set(14_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(300);
+
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 320);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 130);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(20_in, DRIVE_SPEED/2);
+  chassis.pid_wait();
+
+  ringGrab.set_value(1);
+
+  turn(flipped, 140);
+  chassis.pid_wait();
+
+  intakeBreak();
 }
 
 void auton::red_pos() {
-  auton::pos_2(true);
+  bool flipped = true;
+
+  chassis.pid_drive_set(-18, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 45);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-18, DRIVE_SPEED/1.5);
+  chassis.pid_wait_until(-10);
+  goalGrab.set_value(1);
+  chassis.pid_wait();
+
+  turn(flipped, 90);
+  chassis.pid_wait();
+  
+  intakeSpin(127);
+
+  chassis.pid_drive_set(26_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(1000);
+  goalGrab.set_value(0);
+  intakeBreak();  
+
+  turn(flipped, 200);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(5_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  ringGrab.set_value(1);
+
+  pros::delay(1000);
+
+  chassis.pid_drive_set(-20_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  ringGrab.set_value(0);
+
+  turn(flipped, 265);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(48_in, DRIVE_SPEED/2);
+  chassis.pid_wait();
+
+  ringGrab.set_value(1);
+
+  return;
+  chassis.pid_drive_set(-31_in, 200);
+  chassis.pid_wait_quick_chain();
+
+  turn(flipped, 40);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED/2);
+  chassis.pid_wait();
+
+  goalGrab.set_value(1);
+
+  pros::delay(200);
+
+  chassis.pid_drive_set(4_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  intakeSpin(127);
+
+  turn(flipped, -45);
+  chassis.pid_wait();
+
+  pros::delay(1200);
+  intakeSpin(-30);
+  goalGrab.set_value(0);
+
+  pros::delay(200);
+
+  intakeSpin(127);
+
+  // grab mid ring
+  chassis.pid_drive_set(16_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(100);
+  intakeBreak();
+
+  turn(flipped, 90);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-18_in, DRIVE_SPEED/2);
+  chassis.pid_wait();
+
+  goalGrab.set_value(1);
+  intakeSpin(127);
+
+  pros::delay(500);
+
+  turn(flipped, 180);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
+  goalGrab.set_value(0);
+
+  chassis.pid_drive_set(14_in, DRIVE_SPEED/2.5);
+  chassis.pid_wait();
+
+  intakeBreak();
+
 }
 
+void auton::blue_elim() {
+  bool flipped = false;
+  chassis.pid_drive_set(-18_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 42);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED/2);
+  chassis.pid_wait();
+
+  goalGrab.set_value(1);
+
+  pros::delay(350);
+
+  turn(flipped, 225);
+  chassis.pid_wait();
+
+  intakeSpin(127);
+
+  chassis.pid_drive_set(26_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
+  chassis.pid_drive_set(-8_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 235);
+  chassis.pid_wait();
+  
+  pros::delay(2000);
+
+  chassis.pid_drive_set(14_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(300);
+
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 320);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, -120);
+  chassis.pid_wait_quick_chain();
+
+  intakeBreak();
+
+  chassis.pid_drive_set(-58_in, DRIVE_SPEED);
+  chassis.pid_wait();
+  return;
+
+  chassis.pid_drive_set(20_in, DRIVE_SPEED/2);
+  chassis.pid_wait();
+
+  ringGrab.set_value(1);
+
+  turn(flipped, 140);
+  chassis.pid_wait();
+}
+
+void auton::red_elim() {
+  bool flipped = true;
+  chassis.pid_drive_set(38_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  intakeSpin(127);
+
+  turn(flipped, 25);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(10_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 55);
+  chassis.pid_wait();
+  intakeBreak();
+
+  pros::delay(250);
+
+  chassis.pid_drive_set(-20_in, DRIVE_SPEED/2);
+  chassis.pid_wait_until(-2);
+  chassis.pid_wait_until(-18_in);
+  goalGrab.set_value(1);
+  chassis.pid_wait();
+  intakeSpin(127);
+
+  turn(flipped, 75);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(18_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 40);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(10_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(250);
+
+  chassis.pid_drive_set(-20_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 90);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(20, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-6, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 180);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(30, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-6, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(false, -270);
+  chassis.pid_wait();
+
+  intakeBreak();
+
+  chassis.pid_drive_set(80, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  return;
+  chassis.pid_drive_set(-14_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped,35);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-18_in, DRIVE_SPEED/1.5);
+  chassis.pid_wait_until(-14_in);
+  goalGrab.set_value(1);
+  chassis.pid_wait();
+
+  turn(flipped, 220);
+  chassis.pid_wait();
+
+  intakeSpin(127);
+
+  chassis.pid_drive_set(28_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-8_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 235);
+  chassis.pid_wait();
+  
+  pros::delay(2000);
+
+  chassis.pid_drive_set(14_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(300);
+
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 320);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, 130);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(20_in, DRIVE_SPEED/2);
+  chassis.pid_wait();
+
+  ringGrab.set_value(1);
+
+  turn(flipped, 140);
+  chassis.pid_wait();
+
+  intakeBreak();
+}
 ///
 // Interference example
 ///

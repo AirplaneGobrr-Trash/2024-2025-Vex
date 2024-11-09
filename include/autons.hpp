@@ -1,18 +1,20 @@
 #pragma once
 
+extern void lift_wait();
+
 namespace auton {
 void default_constants();
 void none();
 void cali();
 
-void skillsGood();
-void skillsV2();
-
-void neg_2(bool flipped);
 void blue_neg();
 void red_neg();
 
-void pos_2(bool flipped);
-void blue_pos();
+void blue_pos2();
 void red_pos();
+
+void blue_elim();
+void red_elim();
+
+void skills3();
 }  // namespace auton

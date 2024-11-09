@@ -399,7 +399,7 @@
     "upload_options": {
       "icon": "pizza",
       "description": "6627S Vex code",
-      "after": "run"
+      "after": "none"
     }
   }
 }

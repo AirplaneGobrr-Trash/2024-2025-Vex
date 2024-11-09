@@ -1,5 +1,6 @@
 #include "main.h"
 #include "screen.hpp"
+#include "gobals.hpp"
 
 LV_IMG_DECLARE(Spades_No_BG_Small);
 LV_FONT_DECLARE(comicsans);
@@ -23,12 +24,16 @@ void renderBlueTab(lv_obj_t * blueTab) {
 
     lv_obj_t * bluePos = lv_tabview_add_tab(blueTabView, "Blue Pos");
     lv_obj_t * blueNeg = lv_tabview_add_tab(blueTabView, "Blue Neg");
+    lv_obj_t * blueElim = lv_tabview_add_tab(blueTabView, "Blue Neg Elim");
 
     lv_obj_t * blueLabel = lv_label_create(bluePos);
     lv_label_set_text(blueLabel, "Blue Pos Auton\nBla bla bla");
 
     blueLabel = lv_label_create(blueNeg);
     lv_label_set_text(blueLabel, "Blue Neg Auton\nBla bla bla");
+
+    blueLabel = lv_label_create(blueElim);
+    lv_label_set_text(blueLabel, "Blue Neg Elim Auton\nBla bla bla");
 }
 
 void renderRedTab(lv_obj_t * redTab) {
@@ -41,12 +46,16 @@ void renderRedTab(lv_obj_t * redTab) {
 
     lv_obj_t * redPos = lv_tabview_add_tab(redTabView, "Red Pos");
     lv_obj_t * redNeg = lv_tabview_add_tab(redTabView, "Red Neg");
+    lv_obj_t * redElim = lv_tabview_add_tab(redTabView, "Red Neg Elim");
 
     lv_obj_t * redLabel = lv_label_create(redPos);
     lv_label_set_text(redLabel, "Red Pos Auton\nBla bla bla");
 
     redLabel = lv_label_create(redNeg);
     lv_label_set_text(redLabel, "Red Neg Auton\nBla bla bla");
+
+    redLabel = lv_label_create(redElim);
+    lv_label_set_text(redLabel, "Red Neg Elim Auton\nBla bla bla");
 }
 
 void renderSkillsTab(lv_obj_t * skillsTab) {
@@ -128,6 +137,13 @@ void picker::update() {
     picker::getAuton();
 }
 
+void updater(){
+    while (true){
+        picker::update();
+        pros::delay(500);
+    }
+}
+
 void picker::render(void) {
     static lv_style_t style;
     lv_style_init(&style);
@@ -143,8 +159,6 @@ void picker::render(void) {
     renderAuton(autonsTab);
     renderDebug(debugTab);
 
-    // lv_obj_set_style_text_color(redTab, lv_color_make(255, 0, 0), 0); // rgb(255, 0, 0)
-
     // Non tab based stuff
 
     lv_obj_t * img = lv_img_create(lv_scr_act());  // Create an image object on the active screen
@@ -153,6 +167,7 @@ void picker::render(void) {
     lv_img_set_src(img, &Spades_No_BG_Small);  // Use the image data declared in SpadesBG.c
     // lv_img_set_src(img, "/usd/Spades_No_BG_Small.png");
     lv_obj_align(img, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
+    pros::Task::create(updater);
 }
 
 std::vector<uint16_t> picker::getAuton() {
@@ -182,8 +197,8 @@ std::vector<uint16_t> picker::getAuton() {
 }
 
 uint16_t maxAutons = 3;
-uint16_t maxBlue = 2;
-uint16_t maxRed = 2;
+uint16_t maxBlue = 3;
+uint16_t maxRed = 3;
 
 void picker::next() {
     lv_tabview_set_act(mainTabView, 0, LV_ANIM_OFF);
