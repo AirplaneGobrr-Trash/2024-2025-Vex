@@ -206,49 +206,6 @@ void picker::render(void) {
 
 Now onto our `renderAuton` function, this function renders out our autons
 
-```cpp
-void renderAuton(lv_obj_t * autonsTab) {
-    lv_obj_set_style_pad_all(autonsTab, 0, 0);
-
- autonTabView = lv_tabview_create(autonsTab, LV_DIR_LEFT, 55);
-    lv_obj_t * tab_content = lv_tabview_get_content(autonTabView);
-
-    lv_obj_clear_flag(tab_content, LV_OBJ_FLAG_SCROLLABLE);
-
-    lv_obj_set_style_bg_color(autonTabView, lv_color_make(0, 0, 0), 0); // rgb(0, 0, 0)
-
-    lv_obj_t * tab_btns = lv_tabview_get_tab_btns(autonTabView);
-
-    std::vector<AutonHelper> autons = utils::getAutons();
-   
-    for (const auto& autonInfo : autons) {
-        std::string name = autonInfo.getName();
-        lv_obj_t * tab = lv_tabview_add_tab(autonTabView, name.c_str());
-        lv_obj_set_style_pad_all(tab, 0, 0);
-
-        if (name == "Blue") maxBlue = autonInfo.getCount();
-        if (name == "Red") maxRed = autonInfo.getCount();
-
-        lv_obj_t * tabView = lv_tabview_create(tab, LV_DIR_TOP, 40);
-        tabs.emplace_back(name, tabView);
-
-        auto [r, g, b] = autonInfo.getRGB();
-        lv_obj_set_style_bg_color(tabView, lv_color_make(r, g, b), 0);
-
- // Add pos, neg, etc... autons to tabs
-        for (const auto& auton : autonInfo.getAutons()) {
-            lv_obj_t * autonTab = lv_tabview_add_tab(tabView, auton.first.c_str());
-   
-            lv_obj_t * autonLabel = lv_label_create(autonTab);
-            lv_label_set_text(autonLabel, autonInfo.getAutonDesc(auton.first).c_str());
-            pros::delay(1);
- }
-        pros::delay(5);
- }
-
-}
-```
-
 The first step is to disable some default LVGL padding
 
 ```cpp
@@ -325,6 +282,51 @@ lv_obj_t * autonTab = lv_tabview_add_tab(tabView, auton.first.c_str());
 
 lv_obj_t * autonLabel = lv_label_create(autonTab);
 lv_label_set_text(autonLabel, autonInfo.getAutonDesc(auton.first).c_str());  
+```
+
+Putting this all together we get
+
+```cpp
+void renderAuton(lv_obj_t * autonsTab) {
+    lv_obj_set_style_pad_all(autonsTab, 0, 0);
+
+    autonTabView = lv_tabview_create(autonsTab, LV_DIR_LEFT, 55);
+    lv_obj_t * tab_content = lv_tabview_get_content(autonTabView);
+
+    lv_obj_clear_flag(tab_content, LV_OBJ_FLAG_SCROLLABLE);
+
+    lv_obj_set_style_bg_color(autonTabView, lv_color_make(0, 0, 0), 0); // rgb(0, 0, 0)
+
+    lv_obj_t * tab_btns = lv_tabview_get_tab_btns(autonTabView);
+
+    std::vector<AutonHelper> autons = utils::getAutons();
+   
+    for (const auto& autonInfo : autons) {
+        std::string name = autonInfo.getName();
+        lv_obj_t * tab = lv_tabview_add_tab(autonTabView, name.c_str());
+        lv_obj_set_style_pad_all(tab, 0, 0);
+
+        if (name == "Blue") maxBlue = autonInfo.getCount();
+        if (name == "Red") maxRed = autonInfo.getCount();
+
+        lv_obj_t * tabView = lv_tabview_create(tab, LV_DIR_TOP, 40);
+        tabs.emplace_back(name, tabView);
+
+        auto [r, g, b] = autonInfo.getRGB();
+        lv_obj_set_style_bg_color(tabView, lv_color_make(r, g, b), 0);
+
+        // Add pos, neg, etc... autons to tabs
+        for (const auto& auton : autonInfo.getAutons()) {
+            lv_obj_t * autonTab = lv_tabview_add_tab(tabView, auton.first.c_str());
+   
+            lv_obj_t * autonLabel = lv_label_create(autonTab);
+            lv_label_set_text(autonLabel, autonInfo.getAutonDesc(auton.first).c_str());
+            pros::delay(1);
+        }
+        pros::delay(5);
+    }
+
+}
 ```
 
 Next onto our `next` funtion, this funtion switches the tab we are looking at to the next one, this is where the `maxBlue` and `maxRed` come in to be used
@@ -468,7 +470,7 @@ Wait! Why do we use a task for the `autonSelc`? Well code like a river, if a log
 
 In this example, the `while(true) {}` is the log and will stop the river from flowing, I will show the `while(true) {}` loop after
 
-Next we do something werid, there is a problem in LVGL where the screen will stop listening for touches, this next code block is ment to minumimise this problem, we run this code during interviews so we can show our brain screen working without having to have a limit switch
+Next we do something werid, there is a problem in LVGL where the screen will stop listening for touches, this next code block is ment to minumimise this problem, we run this code during interviews so we can show our brain screen working without having to have a comp switch
 
 ```cpp
 if (noCode) return;
