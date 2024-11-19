@@ -1,76 +1,23 @@
 #include "main.h"
+
 #include "screen.hpp"
 #include "gobals.hpp"
+#include "autons.hpp"
+#include "utils.hpp"
 
 LV_IMG_DECLARE(Spades_No_BG_Small);
 LV_FONT_DECLARE(comicsans);
 
 lv_obj_t * mainTabView;
 lv_obj_t * autonTabView;
-lv_obj_t * blueTabView;
-lv_obj_t * redTabView;
-lv_obj_t * skillsTabView;
 
 lv_obj_t * currentAuton;
 lv_obj_t * debugLabel;
 
-void renderBlueTab(lv_obj_t * blueTab) {
-    // Disabled werid padding on tab
-    lv_obj_set_style_pad_all(blueTab, 0, 0);
+uint16_t maxBlue = 4;
+uint16_t maxRed = 4;
 
-    blueTabView = lv_tabview_create(blueTab, LV_DIR_TOP, 40);
-    // lv_obj_set_style_bg_color(blueTabView, lv_color_make(128, 0, 128), 0); // rgb(128, 0, 128)
-    lv_obj_set_style_bg_color(blueTabView, lv_color_make(0, 0, 255), 0); // rgb(0, 0, 255)
-
-    lv_obj_t * bluePos = lv_tabview_add_tab(blueTabView, "Blue Pos");
-    lv_obj_t * blueNeg = lv_tabview_add_tab(blueTabView, "Blue Neg");
-    lv_obj_t * blueElim = lv_tabview_add_tab(blueTabView, "Blue Neg Elim");
-
-    lv_obj_t * blueLabel = lv_label_create(bluePos);
-    lv_label_set_text(blueLabel, "Blue Pos Auton\nBla bla bla");
-
-    blueLabel = lv_label_create(blueNeg);
-    lv_label_set_text(blueLabel, "Blue Neg Auton\nBla bla bla");
-
-    blueLabel = lv_label_create(blueElim);
-    lv_label_set_text(blueLabel, "Blue Neg Elim Auton\nBla bla bla");
-}
-
-void renderRedTab(lv_obj_t * redTab) {
-    // Disabled werid padding on tab
-    lv_obj_set_style_pad_all(redTab, 0, 0);
-
-    redTabView = lv_tabview_create(redTab, LV_DIR_TOP, 40);
-    // lv_obj_set_style_bg_color(redTabView, lv_color_make(128, 0, 128), 0); // rgb(128, 0, 128)
-    lv_obj_set_style_bg_color(redTabView, lv_color_make(255, 0, 0), 0); // rgb(255, 0, 0)
-
-    lv_obj_t * redPos = lv_tabview_add_tab(redTabView, "Red Pos");
-    lv_obj_t * redNeg = lv_tabview_add_tab(redTabView, "Red Neg");
-    lv_obj_t * redElim = lv_tabview_add_tab(redTabView, "Red Neg Elim");
-
-    lv_obj_t * redLabel = lv_label_create(redPos);
-    lv_label_set_text(redLabel, "Red Pos Auton\nBla bla bla");
-
-    redLabel = lv_label_create(redNeg);
-    lv_label_set_text(redLabel, "Red Neg Auton\nBla bla bla");
-
-    redLabel = lv_label_create(redElim);
-    lv_label_set_text(redLabel, "Red Neg Elim Auton\nBla bla bla");
-}
-
-void renderSkillsTab(lv_obj_t * skillsTab) {
-    // Disabled werid padding on tab
-    lv_obj_set_style_pad_all(skillsTab, 0, 0);
-
-    skillsTabView = lv_tabview_create(skillsTab, LV_DIR_TOP, 40);
-    // lv_obj_set_style_bg_color(redTabView, lv_color_make(128, 0, 128), 0); // rgb(128, 0, 128)
-    lv_obj_set_style_bg_color(skillsTabView, lv_color_make(204,204,0), 0); // rgb(204,204,0)
-
-    lv_obj_t * skillV2 = lv_tabview_add_tab(skillsTabView, "V2");
-
-    lv_obj_t * skillsLabel = lv_label_create(skillV2);
-    lv_label_set_text(skillsLabel, "Skills Auton");
-}
+std::vector<std::pair<std::string, lv_obj_t *>> tabs = {};
 
 void renderAuton(lv_obj_t * autonsTab) {
     lv_obj_set_style_pad_all(autonsTab, 0, 0);
@@ -84,6 +31,37 @@ void renderAuton(lv_obj_t * autonsTab) {
 
     lv_obj_t * tab_btns = lv_tabview_get_tab_btns(autonTabView);
 
+    std::vector<AutonHelper> autons = utils::getAutons();
+    
+    for (const auto& autonInfo : autons) {
+        std::string name = autonInfo.getName();
+        lv_obj_t * tab = lv_tabview_add_tab(autonTabView, name.c_str());
+        lv_obj_set_style_pad_all(tab, 0, 0);
+
+        if (name == "Blue") maxBlue = autonInfo.getCount();
+        if (name == "Red") maxRed = autonInfo.getCount();
+
+        lv_obj_t * tabView = lv_tabview_create(tab, LV_DIR_TOP, 40);
+        tabs.emplace_back(name, tabView);
+
+        auto [r, g, b] = autonInfo.getRGB();
+        lv_obj_set_style_bg_color(tabView, lv_color_make(r, g, b), 0);
+
+        // Add pos, neg, etc... autons to tabs
+        for (const auto& auton : autonInfo.getAutons()) {
+            lv_obj_t * autonTab = lv_tabview_add_tab(tabView, auton.first.c_str());
+    
+            lv_obj_t * autonLabel = lv_label_create(autonTab);
+            lv_label_set_text(autonLabel, autonInfo.getAutonDesc(auton.first).c_str());
+            pros::delay(1);
+        }
+        pros::delay(5);
+    }
+
+}
+
+void old(){
+
     // lv_obj_set_style_bg_color(tab_btns, lv_color_make(128, 100, 128), 0); // rgb(128, 100, 128)
     // Background when not selected
     // lv_obj_set_style_text_color(tab_btns, lv_color_make(255, 255, 255), 0); // rgb(255, 255, 255)
@@ -94,21 +72,22 @@ void renderAuton(lv_obj_t * autonsTab) {
     // lv_obj_set_style_text_color(tab_btns, lv_color_make(255, 255, 0), LV_PART_ITEMS | LV_STATE_CHECKED); // rgb(255, 255, 0)
     // Text color when selected
 
+    // Old code:
 
     /*Add 3 tabs (the tabs are page (lv_page) and can be scrolled*/
-    lv_obj_t * blueTab = lv_tabview_add_tab(autonTabView, "Blue");
-    lv_obj_t * redTab = lv_tabview_add_tab(autonTabView, "Red");
-    lv_obj_t * skillsTab = lv_tabview_add_tab(autonTabView, "Skills");
+    // lv_obj_t * blueTab = lv_tabview_add_tab(autonTabView, "Blue");
+    // lv_obj_t * redTab = lv_tabview_add_tab(autonTabView, "Red");
+    // lv_obj_t * skillsTab = lv_tabview_add_tab(autonTabView, "Skills");
 
     // Blue
-    renderBlueTab(blueTab);
+    // renderBlueTab(blueTab);
     // lv_obj_set_style_text_color(blueTab, lv_color_make(0, 0, 255), 0); // rgb(0, 0, 255)
 
     // Red
-    renderRedTab(redTab);
+    // renderRedTab(redTab);
 
     // Skills
-    renderSkillsTab(skillsTab);
+    // renderSkillsTab(skillsTab);
 }
 
 void renderDebug(lv_obj_t * debugTab) {
@@ -165,7 +144,6 @@ void picker::render(void) {
 
     /* Set the image source */
     lv_img_set_src(img, &Spades_No_BG_Small);  // Use the image data declared in SpadesBG.c
-    // lv_img_set_src(img, "/usd/Spades_No_BG_Small.png");
     lv_obj_align(img, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
     pros::Task::create(updater);
 }
@@ -176,15 +154,15 @@ std::vector<uint16_t> picker::getAuton() {
     // lv_tabview_set_act(tabview, 1, LV_ANIM_OFF);
     switch(active_tab) {
         case 0: {
-            active_tab_auton = lv_tabview_get_tab_act(blueTabView);
+            active_tab_auton = lv_tabview_get_tab_act(tabs[0].second);
             break;
         }
         case 1: {
-            active_tab_auton = lv_tabview_get_tab_act(redTabView);
+            active_tab_auton = lv_tabview_get_tab_act(tabs[1].second);
             break;
         }
         case 2: {
-            active_tab_auton = lv_tabview_get_tab_act(skillsTabView);
+            active_tab_auton = lv_tabview_get_tab_act(tabs[2].second);
             break;
         }
     }
@@ -196,10 +174,6 @@ std::vector<uint16_t> picker::getAuton() {
     return { active_tab, active_tab_auton };
 }
 
-uint16_t maxAutons = 3;
-uint16_t maxBlue = 3;
-uint16_t maxRed = 3;
-
 void picker::next() {
     lv_tabview_set_act(mainTabView, 0, LV_ANIM_OFF);
 
@@ -208,26 +182,26 @@ void picker::next() {
 
     switch (activeAutonTab) {
         case 0: {
-            uint16_t activeBlueTab = lv_tabview_get_tab_act(blueTabView);
+            uint16_t activeBlueTab = lv_tabview_get_tab_act(tabs[0].second);
             activeBlueTab++;
             if (activeBlueTab == maxBlue) {
-                lv_tabview_set_act(blueTabView, 0, LV_ANIM_OFF);
+                lv_tabview_set_act(tabs[0].second, 0, LV_ANIM_OFF);
                 lv_tabview_set_act(autonTabView, 1, LV_ANIM_OFF);
                 break;
             } else {
-                lv_tabview_set_act(blueTabView, activeBlueTab, LV_ANIM_OFF);
+                lv_tabview_set_act(tabs[0].second, activeBlueTab, LV_ANIM_OFF);
                 break;
             }
         }
         case 1: {
-            uint16_t activeRedTab = lv_tabview_get_tab_act(redTabView);
+            uint16_t activeRedTab = lv_tabview_get_tab_act(tabs[1].second);
             activeRedTab++;
             if (activeRedTab == maxRed) {
-                lv_tabview_set_act(redTabView, 0, LV_ANIM_OFF);
+                lv_tabview_set_act(tabs[1].second, 0, LV_ANIM_OFF);
                 lv_tabview_set_act(autonTabView, 0, LV_ANIM_OFF);
                 break;
             } else {
-                lv_tabview_set_act(redTabView, activeRedTab, LV_ANIM_OFF);
+                lv_tabview_set_act(tabs[1].second, activeRedTab, LV_ANIM_OFF);
                 break;
             }
         }

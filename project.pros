@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "2024-2025 Vex",
+    "project_name": "2024-2025 Vexb",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -399,7 +399,8 @@
     "upload_options": {
       "icon": "pizza",
       "description": "6627S Vex code",
-      "after": "none"
+      "after": "none",
+      "slot": 1
     }
   }
 }

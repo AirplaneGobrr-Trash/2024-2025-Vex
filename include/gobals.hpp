@@ -6,6 +6,10 @@
 #include "pros/apix.h"
 #include "EZ-Template/api.hpp"
 
+void lift_wait();
+int getAngle();
+void lift_task();
+
 extern ez::Drive chassis;
 
 extern pros::Controller masterController;
@@ -17,6 +21,10 @@ extern pros::Motor twoBar;
 // Other
 extern pros::Rotation twoBarRot;
 extern ez::PID liftPID;
+extern void lift_wait();
+extern int getAngle();
+extern void lift_task();
+
 
 // 3 Wire
 // Out

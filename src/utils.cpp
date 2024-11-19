@@ -1,56 +1,95 @@
 #include "utils.hpp"
+#include "autons.hpp"
+
 #include <stdio.h>
+
+#include <functional>
+#include <iostream>
+#include <optional>
+#include <vector>
 
 #include "main.h"
 
-bool utils::cataGotoAngle(int angle, int speed, bool stopAtWeridAngle, pros::Rotation rot, pros::Motor motor, int timeout = 5) {
-  int cataAngle = rot.get_angle();
-  int resetValue = 35000;
-  if (cataAngle > resetValue)
-    cataAngle = 0;  // When the roto is at 35500 we are at the top.
-  bool notThere = true;
+AutonHelper::AutonHelper(const std::string& name, int r, int g, int b)
+    : name(name), color{r, g, b} {}
 
-  if (speed > 0) {
-    if (angle < cataAngle)
-      return false;
-  } else if (speed < 0) {
-    if (angle > cataAngle)
-      return false;
+void AutonHelper::addAuton(const std::string& autonName, std::function<void()> func, const std::string& autonNameDesc) {
+  autons.emplace_back(autonName, func);
+  autonsDesc.emplace_back(autonName, autonNameDesc);
+}
+
+std::string AutonHelper::getName() const {
+  return name;
+}
+
+void AutonHelper::listAutons() const {
+  std::cout << "Autons for " << name << " (RGB: " << color.r << ", " << color.g << ", " << color.b << "):\n";
+  for (const auto& [autonName, _] : autons) {
+    std::cout << "  " << autonName << "\n";
   }
+}
 
-  while (notThere) {
-    // Override
-    if (master.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X)) {
-      motor.brake();
-      notThere = false;
+// Returns the count of autonomous routines
+size_t AutonHelper::getCount() const {
+  return autons.size();
+}
+
+std::tuple<int, int, int> AutonHelper::getRGB() const {
+  return std::make_tuple(color.r, color.g, color.b);
+}
+
+std::vector<std::pair<std::string, std::function<void()>>> AutonHelper::getAutons() const {
+  return autons;
+}
+
+std::vector<std::pair<std::string, std::string>> AutonHelper::getAutonsDesc() const {
+  return autonsDesc;
+}
+
+// Runs a specific auton function by name
+bool AutonHelper::runAuton(const std::string& autonName) const {
+  for (const auto& [name, func] : autons) {
+    if (name == autonName) {
+      std::cout << "Running " << name << " for " << this->name << ":\n";
+      func();
       return true;
     }
-
-    int cataAngle = rot.get_angle();
-    // printf("AngleGoto: %ld \n", cataAngle);
-    if (cataAngle > resetValue) {
-      cataAngle = 0;
-    }
-
-    if (speed > 0) {  // Positive speed
-      if (cataAngle < angle) {
-        motor.move(speed);
-      } else {
-        motor.brake();
-        notThere = false;
-        return true;
-      }
-    } else if (speed < 0) {  // Negative speed
-
-      if (cataAngle > angle) {
-        motor.move(speed);
-      } else {
-        motor.brake();
-        notThere = false;
-        return true;
-      }
-    }
-    pros::delay(ez::util::DELAY_TIME);
   }
-  return true;
+  std::cerr << "Auton '" << autonName << "' not found for " << this->name << "!\n";
+  return false;
+}
+
+std::string AutonHelper::getAutonDesc(const std::string& autonName) const {
+  for (const auto& [name, desc] : autonsDesc) {
+    if (name == autonName) {
+      return desc;
+    }
+  }
+  return ":(";
+}
+
+std::vector<AutonHelper> autons;
+
+std::vector<AutonHelper> utils::createAutons() {
+  AutonHelper blue("Blue", 0,0,255);
+  blue.addAuton("pos", auton::blue::pos,"Pos\nx - ring\nx - tops");
+  blue.addAuton("neg", auton::blue::neg,"Neg\nx - ring\nx - tops");
+  blue.addAuton("neg_wp", auton::blue::neg_wp,"Neg (WP) Win Point\nx - ring\nx - tops");
+  blue.addAuton("neg_elim", auton::blue::neg_elim,"Neg Elim\nx - ring\nx - tops");
+
+  AutonHelper red("Red", 255,0,0);
+  red.addAuton("pos", auton::red::pos,"Pos\nx - ring\nx - tops");
+  red.addAuton("neg", auton::red::neg,"Neg\nx - ring\nx - tops");
+  red.addAuton("neg_wp", auton::red::neg_wp,"Neg (WP) Win Point\nx - ring\nx - tops");
+  red.addAuton("neg_elim", auton::red::neg_elim,"Neg Elim\nx - ring\nx - tops");
+
+  AutonHelper skills("Skills", 204,204,0);
+  skills.addAuton("SkillsV3", auton::skills::skillsv3,"Skills V3\nI hate (mondays) skills....");
+
+  autons = {blue, red, skills};
+  return autons;
+}
+
+std::vector<AutonHelper> utils::getAutons() {
+  return autons;
 }

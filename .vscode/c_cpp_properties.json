@@ -4,8 +4,9 @@
       "name": "PROS Project",
       "includePath": [
         "${workspaceFolder}/**",
-        "c:\\Users\\AirplaneGobrr\\Documents\\Github\\2024-2025-Vex\\code\\include",
+        "${workspaceFolder}/include",
         "c:\\Users\\AirplaneGobrr\\Documents\\Github\\2024-2025-Vex\\include",
+        "c:\\Users\\airplanegobrr\\Documents\\GitHub\\2024-2025-Vex\\include",
         "c:\\Users\\airplanegobrr\\Documents\\GitHub\\2024-2025-Vex\\include"
       ],
       "defines": [
