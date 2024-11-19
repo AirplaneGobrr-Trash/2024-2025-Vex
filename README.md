@@ -36,7 +36,7 @@ First, more about me, The programmer for `6627S`.
 
 My name is Charlie, I mainly like to code in JavaScript and I like to use OOP, or Object-oriented programming. While C++ is an OOP language I don’t like how the include system works where it will dump all the function names into the root namespace, this is why I have heavy use of namespaces, namespaces allow me to have blocks of code under a name, most of my files have namespaces for them.
 
-The `autons.cpp` file uses the namespace `auton::` this helps me in programming if I want to call a function from `autons.cpp` I just can put auton:: and see what functions it has using my IDE and IntelliSense.
+The `autons.cpp` file uses the namespace `auton::` this helps me in programming if I want to call a function from `autons.cpp` I just can put `auton::` and see what functions it has using my IDE and IntelliSense.
 
 # File namespaces
 
@@ -175,6 +175,8 @@ It is used in our `main.cpp`, and our `screen.cpp` files, I will first cover our
 
 `comicsans.c` is for our font
 
+## render
+
 The first function is `render`, this function renders out all the elements on the screen using LVGL. We first make a style and apply comic sans to this style. Now we make the MAIN tabs that we use, this being Autons and Debug after that we call renderAuton and renderDebug we then add our logo to the main screen, if we add it to mainTabView it will not be shown on ALL the screens and will vanish.
 
 ```cpp
@@ -203,6 +205,8 @@ void picker::render(void) {
     pros::Task::create(updater);
 }
 ```
+
+## renderAuton
 
 Now onto our `renderAuton` function, this function renders out our autons
 
@@ -329,6 +333,8 @@ void renderAuton(lv_obj_t * autonsTab) {
 }
 ```
 
+## next
+
 Next onto our `next` funtion, this funtion switches the tab we are looking at to the next one, this is where the `maxBlue` and `maxRed` come in to be used
 
 First we make sure animations are off and we also get the current main tab group we are on, this will be either the `Red`, `Blue` or `Skills` tab
@@ -440,7 +446,11 @@ void picker::next() {
 
 # main.cpp
 
-The `main.cpp` file where everything comes together, the first function run when the robot is started is the `initialize` function, this is one of the most vitial functions on the robot
+The `main.cpp` file where everything comes together.
+
+## initialize
+
+The first function run when the robot is started is the `initialize` function, this is one of the most vitial functions on the robot
 
 ```cpp
 void initialize() {
@@ -546,6 +556,8 @@ void initialize() {
 }
 ```
 
+## autonomous
+
 Next is our `autonomous` function.
 
 ```cpp
@@ -609,6 +621,8 @@ void autonomous() {
   m_autons[autonColor].getAutons()[autonType].second();
 }
 ```
+
+## opcontrol
 
 Next is `opcontrol` this is the code that run during driver control, this is also an importation function
 
@@ -710,6 +724,8 @@ void opcontrol() {
 }
 ```
 
+## controllerButtons
+
 The next function I will cover is `controllerButtons`
 
 ```cpp
@@ -796,10 +812,12 @@ void controllerButtons() {
 }
 ```
 
+## controllerButtons2
+
 Now for our `controllerButtons2` function
 
 ```cpp
-void controllerButtons2() {
+void controllerButtons2() {}
 ```
 
 This starts the same as `controllerButtons`, we make a `while (true){}` loop and check if auton is running
@@ -859,6 +877,8 @@ void controllerButtons2() {
 ```
 
 # globals.cpp
+
+## lift_task
 
 Ok great! We can load and score using our two bar, but how do we put the two bar back down? This is done using `lift_task`
 
@@ -929,6 +949,8 @@ void lift_task() {
 }
 ```
 
+## getAngle
+
 Next is our `getAngle` function
 
 ```cpp
@@ -958,6 +980,8 @@ int getAngle(){
 }
 ```
 
+## lift_wait
+
 Now for `lift_wait`, this function will WAIT untill the PID is done running
 
 ```cpp
@@ -986,6 +1010,8 @@ void lift_wait() {
  }
 }
 ```
+
+## Configs
 
 In this file we also define our drive, motors, pistons and our limit switch
 
@@ -1018,7 +1044,9 @@ ez::PID liftPID(0.45, 0, 0, 0, "Lift");
 
 Now for autons.cpp this file is for our autons! It mainly holds some helper functions for `a_blue.cpp`, `a_red.cpp` and `a_skills.cpp`
 
-default_constants sets our PID constants for actions
+## default_constants
+
+`default_constants` sets our PID constants for actions
 
 ```cpp
 void auton::default_constants() {
@@ -1040,6 +1068,8 @@ void auton::default_constants() {
 }
 ```
 
+## turn and swing
+
 Some helpers are `turn` and `swing`, they help us flip our autons easily
 
 ```cpp
@@ -1056,6 +1086,8 @@ void auton::swing(bool flipped, int degrees, int speed) {
  }
 }
 ```
+
+## intakeSpin and intakeBrake
 
 We also have `intakeSpin` and `intakeBrake` This was used for when we had 2 motors for our intake, I kept it in because its faster to type rather then having to use .move
 
@@ -1127,6 +1159,6 @@ Some PID functions we use alot:
 
 `pid_wait` - this fully runs out the PID currently set
 
-The end!
+# The end!
 
 That's it for how our code works! Thank you for taking the time to read this!
