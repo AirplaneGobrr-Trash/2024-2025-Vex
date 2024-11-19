@@ -1,3 +1,16 @@
+# Note to judges and others!
+
+If you are on a computer, I would recommend clicking [Here](./README.md) (if not already)
+
+And enabling the `Outline` mode!
+
+![Help](./docs/imgs/help.png)
+
+
+This helps follow what I am taking about and how stuff is refenced
+
+![Help2](./docs/imgs/help2.png)
+
 # Files
 
 We use `CPP` to program our robot, this means we have an `include` and `src` folder.
