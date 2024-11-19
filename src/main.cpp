@@ -3,7 +3,7 @@
 #include "autons.hpp"
 #include "screen.hpp"
 #include "utils.hpp"
-#include "gobals.hpp"
+#include "globals.hpp"
 
 bool grabbingRing = false;
 int twoBarSpeed = 90;
@@ -25,18 +25,16 @@ void controllerButtons2() {
     }
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP)) {
-      // utils::cataGotoAngle(2500, twoBarSpeed, false, twoBarRot, twoBar, 10);
       liftPID.target_set(3100);
       lift_wait();
-      // master.rumble("-");
     }
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_RIGHT)) {
-      // utils::cataGotoAngle(12500, twoBarSpeed/1.4, false, twoBarRot, twoBar, 10);
       liftPID.target_set(13500);
       lift_wait();
-      // master.rumble("-");
     }
+
+    pros::delay(100);
 
     // if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B)) {
     //   
@@ -103,7 +101,6 @@ void noCodeCheck() {
 }
 
 void initialize() {
-  noCodeCheck();
   m_autons = utils::createAutons();
   picker::render();
   pros::Task::create(autonSelc);
@@ -124,7 +121,6 @@ void initialize() {
 
   auton::default_constants();
 
-  chassis.opcontrol_curve_sd_initialize();
   chassis.drive_imu_calibrate(false);
   chassis.drive_sensor_reset();
   
@@ -155,7 +151,6 @@ void autonomous() {
 }
 
 void opcontrol() {
-  noCodeCheck();
   runningAuton = false;
   if (noCode) return;
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
@@ -171,7 +166,6 @@ void opcontrol() {
       if (master.get_digital(DIGITAL_B) && master.get_digital(DIGITAL_DOWN)) {
         runningAuton = true;
         autonomous();
-        // auton::skills3();
         runningAuton = false;
         chassis.drive_brake_set(MOTOR_BRAKE_COAST);
       }

@@ -1,7 +1,7 @@
 #include "main.h"
 
 #include "screen.hpp"
-#include "gobals.hpp"
+#include "globals.hpp"
 #include "autons.hpp"
 #include "utils.hpp"
 
@@ -38,14 +38,15 @@ void renderAuton(lv_obj_t * autonsTab) {
         lv_obj_t * tab = lv_tabview_add_tab(autonTabView, name.c_str());
         lv_obj_set_style_pad_all(tab, 0, 0);
 
-        if (name == "Blue") maxBlue = autonInfo.getCount();
-        if (name == "Red") maxRed = autonInfo.getCount();
-
         lv_obj_t * tabView = lv_tabview_create(tab, LV_DIR_TOP, 40);
         tabs.emplace_back(name, tabView);
 
         auto [r, g, b] = autonInfo.getRGB();
         lv_obj_set_style_bg_color(tabView, lv_color_make(r, g, b), 0);
+
+        if (name == "Blue") maxBlue = autonInfo.getCount();
+        if (name == "Red") maxRed = autonInfo.getCount();
+
 
         // Add pos, neg, etc... autons to tabs
         for (const auto& auton : autonInfo.getAutons()) {
@@ -182,31 +183,30 @@ void picker::next() {
 
     switch (activeAutonTab) {
         case 0: {
-            uint16_t activeBlueTab = lv_tabview_get_tab_act(tabs[0].second);
+            lv_obj_t * blueTab = tabs[0].second;
+            uint16_t activeBlueTab = lv_tabview_get_tab_act(blueTab);
             activeBlueTab++;
             if (activeBlueTab == maxBlue) {
-                lv_tabview_set_act(tabs[0].second, 0, LV_ANIM_OFF);
+                lv_tabview_set_act(blueTab, 0, LV_ANIM_OFF);
                 lv_tabview_set_act(autonTabView, 1, LV_ANIM_OFF);
                 break;
             } else {
-                lv_tabview_set_act(tabs[0].second, activeBlueTab, LV_ANIM_OFF);
+                lv_tabview_set_act(blueTab, activeBlueTab, LV_ANIM_OFF);
                 break;
             }
         }
         case 1: {
-            uint16_t activeRedTab = lv_tabview_get_tab_act(tabs[1].second);
+            lv_obj_t * redTab = tabs[1].second;
+            uint16_t activeRedTab = lv_tabview_get_tab_act(redTab);
             activeRedTab++;
             if (activeRedTab == maxRed) {
-                lv_tabview_set_act(tabs[1].second, 0, LV_ANIM_OFF);
+                lv_tabview_set_act(redTab, 0, LV_ANIM_OFF);
                 lv_tabview_set_act(autonTabView, 0, LV_ANIM_OFF);
                 break;
             } else {
-                lv_tabview_set_act(tabs[1].second, activeRedTab, LV_ANIM_OFF);
+                lv_tabview_set_act(redTab, activeRedTab, LV_ANIM_OFF);
                 break;
             }
         }
     }
-
-    // if (activeAutonTab == maxAutons) return lv_tabview_set_act(autonTabView, 0, LV_ANIM_OFF);
-    // lv_tabview_set_act(autonTabView, activeAutonTab, LV_ANIM_OFF);
 }

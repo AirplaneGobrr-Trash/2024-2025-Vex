@@ -1,4 +1,4 @@
-#include "gobals.hpp"
+#include "globals.hpp"
 
 // Drive setup
 ez::Drive chassis({-16,17,-19}, {-13,14,15}, 20, 2.75, 450);
@@ -51,7 +51,7 @@ void lift_task() {
       quitTask = true;
     } else {
       int wantSpeed = liftPID.compute(angle);
-      twoBar.move(wantSpeed/2);
+      twoBar.move(wantSpeed/1.2);
     }
     pros::delay(ez::util::DELAY_TIME);
   }

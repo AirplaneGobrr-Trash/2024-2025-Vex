@@ -1,7 +1,7 @@
 #include "a_blue.hpp"
 
 #include "autons.hpp"
-#include "gobals.hpp"
+#include "globals.hpp"
 
 int B_DRIVE_SPEED = 115;
 int B_TURN_SPEED = 90;

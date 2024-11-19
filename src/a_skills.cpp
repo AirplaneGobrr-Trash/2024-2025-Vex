@@ -1,7 +1,7 @@
 #include "a_skills.hpp"
 
 #include "autons.hpp"
-#include "gobals.hpp"
+#include "globals.hpp"
 
 int S_DRIVE_SPEED = 115;
 int S_TURN_SPEED = 90;
