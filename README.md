@@ -183,7 +183,7 @@ void picker::render(void) {
     lv_style_init(&style);
     lv_style_set_text_font(&style, &comicsans);
 
- mainTabView = lv_tabview_create(lv_scr_act(), LV_DIR_TOP, 30);
+    mainTabView = lv_tabview_create(lv_scr_act(), LV_DIR_TOP, 30);
 
     lv_obj_t * tab_btns = lv_tabview_get_tab_btns(mainTabView);
 
@@ -193,11 +193,11 @@ void picker::render(void) {
     renderAuton(autonsTab);
     renderDebug(debugTab);
 
- // Non tab based stuff
+    // Non tab based stuff
 
     lv_obj_t * img = lv_img_create(lv_scr_act()); // Create an image object on the active screen
 
- /* Set the image source */
+    /* Set the image source */
     lv_img_set_src(img, &Spades_No_BG_Small); // Use the image data declared in SpadesBG.c
     lv_obj_align(img, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
     pros::Task::create(updater);
@@ -344,11 +344,11 @@ We now use a switch funtion, its like a `if` function but it checks if a variabl
 ```cpp
 switch (activeAutonTab) {
     case 0: {
- // blue auton
- }
+        // blue auton
+    }
     case 1: {
- // red auton
- }
+        // red auton
+    }
 }
 ```
 
