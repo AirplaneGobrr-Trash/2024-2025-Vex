@@ -1,4 +1,5 @@
 #include "globals.hpp"
+#include "pros/distance.hpp"
 
 // Drive setup
 ez::Drive chassis({-16,17,-19}, {-13,14,15}, 20, 2.75, 450);
@@ -10,8 +11,9 @@ pros::Controller masterController(CONTROLLER_MASTER);
 pros::Motor intakeMotor(4, pros::v5::MotorGear::blue, pros::v5::MotorUnits::degrees);
 pros::Motor twoBar(-6, pros::v5::MotorGear::red, pros::v5::MotorUnits::degrees);
 
-// Rations
+// Sensors
 pros::Rotation twoBarRot(1);
+pros::Distance backDist(21);
 
 // 3 Wire ports
 pros::adi::DigitalOut goalGrab('A');

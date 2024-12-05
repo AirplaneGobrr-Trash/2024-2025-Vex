@@ -78,7 +78,7 @@ void auton::red::neg() {
   // pros::delay(250);
 
   // pick up goal
-  chassis.pid_drive_set(-20_in, R_DRIVE_SPEED / 1.5);
+  chassis.pid_drive_set(-24_in, R_DRIVE_SPEED / 1.5);
   chassis.pid_wait_until(-2);
   chassis.pid_wait_until(-18_in);
   goalGrab.set_value(1);
@@ -90,19 +90,27 @@ void auton::red::neg() {
 
   // pros::delay(10000);
 
+  // grab ring
   chassis.pid_drive_set(28_in, R_DRIVE_SPEED);
   chassis.pid_wait();
 
-  // turn(flipped, 0);
-  // chassis.pid_wait();
-  //
-  // chassis.pid_drive_set(15_in, R_DRIVE_SPEED);
-  // chassis.pid_wait();
-  //
-  // // pros::delay(250);
-  //
-  // chassis.pid_drive_set(-18_in, R_DRIVE_SPEED);
-  // chassis.pid_wait();
+  turn(flipped, 180);
+  chassis.pid_wait();
+
+  // grab preload
+  chassis.pid_drive_set(24_in, R_DRIVE_SPEED);
+  chassis.pid_wait();
+
+  turn(flipped, -45);
+  chassis.pid_wait();
+
+  // touch ladder
+  chassis.pid_drive_set(44_in, R_DRIVE_SPEED);
+  chassis.pid_wait();
+
+  ringGrab.set_value(1);
+
+  pros::delay(5000);
 }
 
 void auton::red::neg_wp() {
@@ -126,7 +134,7 @@ void auton::red::neg_wp() {
   // pros::delay(250);
 
   // pick up goal
-  chassis.pid_drive_set(-20_in, R_DRIVE_SPEED / 1.5);
+  chassis.pid_drive_set(-24_in, R_DRIVE_SPEED / 1.5);
   chassis.pid_wait_until(-2);
   chassis.pid_wait_until(-18_in);
   goalGrab.set_value(1);
@@ -138,25 +146,14 @@ void auton::red::neg_wp() {
 
   // pros::delay(10000);
 
-  chassis.pid_drive_set(28_in, R_DRIVE_SPEED);
+  chassis.pid_drive_set(24_in, R_DRIVE_SPEED);
   chassis.pid_wait();
-
-  // turn(flipped, 0);
-  // chassis.pid_wait();
-  //
-  // chassis.pid_drive_set(15_in, R_DRIVE_SPEED);
-  // chassis.pid_wait();
-  //
-  // // pros::delay(250);
-  //
-  // chassis.pid_drive_set(-18_in, R_DRIVE_SPEED);
-  // chassis.pid_wait();
 
   turn(flipped, 190);
   chassis.pid_wait();
 
   // go back and get rea
-  chassis.pid_drive_set(34_in, R_DRIVE_SPEED);
+  chassis.pid_drive_set(32_in, R_DRIVE_SPEED);
   chassis.pid_wait();
 
   turn(flipped, 270);
@@ -164,41 +161,46 @@ void auton::red::neg_wp() {
 
   intakeBreak();
 
+  // Middle rings push
+
   chassis.pid_drive_set(52_in, R_DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-8_in, R_DRIVE_SPEED);
+  chassis.pid_drive_set(-14_in, R_DRIVE_SPEED);
   chassis.pid_wait();
 
-  // goalGrab.set_value(0);
+  // Face wall
 
   turn(flipped, 180);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(8_in, R_DRIVE_SPEED);
+  // Hit wall
+  chassis.pid_drive_set(6_in, R_DRIVE_SPEED);
   chassis.pid_wait();
 
-  liftPID.target_set(13800);
+  // Two bar out
+  liftPID.target_set(14000);
   lift_wait();
 
-  pros::delay(250);
+  pros::delay(1000);
 
-  chassis.pid_drive_set(4_in, R_DRIVE_SPEED);
+  // Back from wall
+  chassis.pid_drive_set(-10_in, R_DRIVE_SPEED);
   chassis.pid_wait();
 
-  pros::delay(250);
-
-  chassis.pid_drive_set(-6_in, R_DRIVE_SPEED);
-  chassis.pid_wait();
+  pros::delay(500);
 
   liftPID.target_set(0);
-
-  chassis.pid_drive_set(-6_in, R_DRIVE_SPEED);
-  chassis.pid_wait();
-
   lift_wait();
 
-  turn(flipped, 180);
+  // Face ladder
+
+  turn(flipped, -8);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(20_in, R_DRIVE_SPEED/1.5);
+  chassis.pid_wait_until(5_in);
+  ringGrab.set_value(1);
   chassis.pid_wait();
 
   // chassis.pid_drive_set(40_in, R_DRIVE_SPEED);

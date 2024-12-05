@@ -1,4 +1,5 @@
 #include "main.h"
+#include <chrono>
 
 #include "autons.hpp"
 #include "screen.hpp"
@@ -10,6 +11,9 @@ int twoBarSpeed = 90;
 bool runningAuton = false;
 
 bool noCode = false;
+
+std::chrono::high_resolution_clock::time_point start;
+std::chrono::high_resolution_clock::time_point endTime;
 
 std::vector<AutonHelper> m_autons;
 
@@ -25,7 +29,7 @@ void controllerButtons2() {
     }
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP)) {
-      liftPID.target_set(3100);
+      liftPID.target_set(2700);
       lift_wait();
     }
 
@@ -90,7 +94,20 @@ void autonSelc(){
     uint16_t autonColor = auton[0];
     uint16_t autonType = auton[1];
 
-    master.print(0,0,"%s %s %u %u....", m_autons[autonColor].getName(), m_autons[autonColor].getAutons()[autonType].first, autonColor, autonType);
+    master.print(0,0,"%s %s %u %u %u %u....", m_autons[autonColor].getName(), m_autons[autonColor].getAutons()[autonType].first, autonColor, autonType, backDist.get(), backDist.get()-1610);
+    pros::delay(10);
+  }
+}
+
+void autonTimer() {
+  while (true) {
+    if (isRunningAuton()) endTime = std::chrono::high_resolution_clock::now();
+    auto duration = endTime - start;
+    auto seconds = std::chrono::duration<double>(duration).count();
+    int whole_seconds = static_cast<int>(seconds);
+    int milliseconds = static_cast<int>((seconds - whole_seconds) * 1000);
+
+    master.print(0, 0, "%u %u", backDist.get(), (backDist.get()-1615)/25.4);
     pros::delay(100);
   }
 }
@@ -142,11 +159,13 @@ void autonomous() {
   chassis.drive_sensor_reset();
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
   pros::Task::create(lift_task);
+  pros::task_t t = pros::Task::create(autonTimer);
 
   std::vector<uint16_t> auton = picker::getAuton();
   uint16_t autonColor = auton[0];
   uint16_t autonType = auton[1];
 
+  std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
   m_autons[autonColor].getAutons()[autonType].second();
 }
 

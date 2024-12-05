@@ -18,13 +18,15 @@ extern pros::Controller masterController;
 extern pros::Motor intakeMotor;
 extern pros::Motor twoBar;
 
-// Other
+// Sensors
 extern pros::Rotation twoBarRot;
+extern pros::Distance backDist;
+
+// PID Stuff
 extern ez::PID liftPID;
 extern void lift_wait();
 extern int getAngle();
 extern void lift_task();
-
 
 // 3 Wire
 // Out
