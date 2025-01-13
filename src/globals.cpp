@@ -2,13 +2,13 @@
 #include "pros/distance.hpp"
 
 // Drive setup
-ez::Drive chassis({-16,17,-19}, {-13,14,15}, 20, 2.75, 450);
+ez::Drive chassis({-11,12,-14},{16,-17,18}, 20, 2.75, 450);
 
 // Controller setup
 pros::Controller masterController(CONTROLLER_MASTER);
 
 // Motors
-pros::Motor intakeMotor(4, pros::v5::MotorGear::blue, pros::v5::MotorUnits::degrees);
+pros::Motor intakeMotor(9, pros::v5::MotorGear::blue, pros::v5::MotorUnits::degrees);
 pros::Motor twoBar(-6, pros::v5::MotorGear::red, pros::v5::MotorUnits::degrees);
 
 // Sensors

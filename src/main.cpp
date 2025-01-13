@@ -1,5 +1,4 @@
 #include "main.h"
-#include <chrono>
 
 #include "autons.hpp"
 #include "screen.hpp"
@@ -29,12 +28,12 @@ void controllerButtons2() {
     }
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP)) {
-      liftPID.target_set(2700);
+      liftPID.target_set(2400);
       lift_wait();
     }
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_RIGHT)) {
-      liftPID.target_set(13500);
+      liftPID.target_set(14000);
       lift_wait();
     }
 
