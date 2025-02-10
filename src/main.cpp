@@ -1,13 +1,18 @@
 #include "main.h"
 
 #include "autons.hpp"
+#include "globals.hpp"
+#include "pros/misc.h"
+#include "pros/rtos.hpp"
 #include "screen.hpp"
 #include "utils.hpp"
-#include "globals.hpp"
+
 
 bool grabbingRing = false;
 int twoBarSpeed = 90;
 bool runningAuton = false;
+bool isIntakeUp = false;
+bool isRunningIntake = false;
 
 bool noCode = false;
 
@@ -16,31 +21,33 @@ std::chrono::high_resolution_clock::time_point endTime;
 
 std::vector<AutonHelper> m_autons;
 
+// Checks if we are running an auton
 bool isRunningAuton() {
-  return pros::competition::is_autonomous() || runningAuton;
+  return runningAuton;
+  //pros::competition::is_autonomous() || runningAuton;
 }
 
 void controllerButtons2() {
   while (true) {
-    if (isRunningAuton()) { // Disable buttons if we are running auton
+    if (isRunningAuton()) {  // Disable buttons if we are running auton
       pros::delay(100);
       continue;
     }
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP)) {
-      liftPID.target_set(2400);
+      liftPID.target_set(liftLoad);
       lift_wait();
     }
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_RIGHT)) {
-      liftPID.target_set(14000);
+      liftPID.target_set(liftScoreMain);
       lift_wait();
     }
 
     pros::delay(100);
 
     // if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B)) {
-    //   
+    //
     //   // utils::cataGotoAngle(12500, twoBarSpeed/1.4, false, twoBarRot, twoBar, 10);
     //   liftPID.target_set(100);
     //   lift_wait();
@@ -51,17 +58,26 @@ void controllerButtons2() {
 
 void controllerButtons() {
   while (true) {
-    if (isRunningAuton()) { // Disable buttons if we are running auton
+    if (isRunningAuton()) {  // Disable buttons if we are running auton
       pros::delay(100);
       continue;
     }
 
-    if (masterController.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1)) {
-      intakeMotor.move(127);
-    } else if (masterController.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2)) {
-      intakeMotor.move(-127);
-    } else {
-      intakeMotor.brake();
+    if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1)) {
+      // intakeMotor.move(127);
+      utils::set_intake(127);
+      isRunningIntake = true;
+    } else if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2)) {
+      // intakeMotor.move(-127);
+      utils::set_intake(-127);
+      isRunningIntake = true;
+    } else if (
+      isRunningIntake &&
+      !masterController.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2) &&
+      !masterController.get_digital(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1)
+      ) {
+      isRunningIntake = false;
+      utils::set_intake(0);
     }
 
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1)) {
@@ -76,16 +92,24 @@ void controllerButtons() {
       ringGrab.set_value(0);
     }
 
+    if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A)) {
+      if (isIntakeUp)
+        intakeLift.set_value(1);
+      else
+        intakeLift.set_value(0);
+      isIntakeUp = !isIntakeUp;
+    }
+
     pros::delay(100);
   }
 }
 
-void autonSelc(){
+void autonSelc() {
   while (true) {
-    if (isRunningAuton()) { // Disable buttons if we are running auton
+    if (isRunningAuton()) {  // Disable buttons if we are running auton
       pros::delay(500);
       continue;
-    } 
+    }
     if (autonButton.get_new_press() || master.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_Y)) {
       picker::next();
     }
@@ -93,7 +117,7 @@ void autonSelc(){
     uint16_t autonColor = auton[0];
     uint16_t autonType = auton[1];
 
-    master.print(0,0,"%s %s %u %u %u %u....", m_autons[autonColor].getName(), m_autons[autonColor].getAutons()[autonType].first, autonColor, autonType, backDist.get(), backDist.get()-1610);
+    master.print(0, 0, "%s %s %u %u %u %u....", m_autons[autonColor].getName(), m_autons[autonColor].getAutons()[autonType].first, autonColor, autonType, backDist.get(), backDist.get() - 1610);
     pros::delay(10);
   }
 }
@@ -101,12 +125,11 @@ void autonSelc(){
 void autonTimer() {
   while (true) {
     if (isRunningAuton()) endTime = std::chrono::high_resolution_clock::now();
-    auto duration = endTime - start;
-    auto seconds = std::chrono::duration<double>(duration).count();
-    int whole_seconds = static_cast<int>(seconds);
-    int milliseconds = static_cast<int>((seconds - whole_seconds) * 1000);
 
-    master.print(0, 0, "%u %u", backDist.get(), (backDist.get()-1615)/25.4);
+    std::chrono::duration<double> duration = endTime - start;
+    double seconds = duration.count();
+
+    master.print(0, 0, "%.2f", seconds);
     pros::delay(100);
   }
 }
@@ -117,6 +140,7 @@ void noCodeCheck() {
 }
 
 void initialize() {
+  master.rumble(".");
   m_autons = utils::createAutons();
   picker::render();
   pros::Task::create(autonSelc);
@@ -125,6 +149,7 @@ void initialize() {
 
   ringGrab.set_value(0);
   goalGrab.set_value(0);
+
   twoBarRot.reset_position();
 
   liftPID.constants_set(0.03, 0, 0.04);
@@ -137,10 +162,14 @@ void initialize() {
 
   auton::default_constants();
 
+  // Look at your horizontal tracking wheel and decide if it's in front of the midline of your robot or behind it
+  //  - change `back` to `front` if the tracking wheel is in front of the midline
+  chassis.odom_tracker_back_set(&horiz_tracker);
+
   chassis.drive_imu_calibrate(false);
   chassis.drive_sensor_reset();
-  
-  master.rumble("-");
+
+  master.rumble(chassis.drive_imu_calibrated() ? "-" : "-----");
 }
 
 void disabled() {
@@ -158,14 +187,34 @@ void autonomous() {
   chassis.drive_sensor_reset();
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);
   pros::Task::create(lift_task);
+  pros::Task::create(utils::intake_task);
   pros::task_t t = pros::Task::create(autonTimer);
 
   std::vector<uint16_t> auton = picker::getAuton();
   uint16_t autonColor = auton[0];
   uint16_t autonType = auton[1];
 
-  std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+  start = std::chrono::high_resolution_clock::now();
   m_autons[autonColor].getAutons()[autonType].second();
+  runningAuton = false;
+  // auton::blue::neg();
+}
+
+void color() {
+  while (true) {
+    printf("\n\n");
+    
+    printf("Hue value: %lf \n", liftColor.get_hue());
+    printf("\n");
+
+
+    pros::c::optical_rgb_s_t rgb_value = liftColor.get_rgb();
+    printf("Red value: %lf \n", rgb_value.red);
+    printf("Green value: %lf \n", rgb_value.green);
+    printf("Blue value: %lf \n", rgb_value.blue);
+    printf("Brightness value: %lf \n", rgb_value.brightness);
+    pros::delay(100);
+  }
 }
 
 void opcontrol() {
@@ -175,7 +224,11 @@ void opcontrol() {
   twoBar.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   pros::Task::create(controllerButtons);
   pros::Task::create(controllerButtons2);
+
   pros::Task::create(lift_task);
+  pros::Task::create(utils::intake_task);
+
+  pros::Task::create(color);
 
   while (true) {
     // Check if we are connected to a field

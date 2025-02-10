@@ -3,6 +3,5 @@
 namespace auton::blue {
     void pos();
     void neg();
-    void neg_wp();
-    void neg_elim();
+    void neg2();
 }  // namespace auton

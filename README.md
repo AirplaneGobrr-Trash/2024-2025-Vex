@@ -1,3 +1,9 @@
+# Warning!
+
+As of, 2/10/25 this is out of date
+
+The code layout is mostly the same just some stuff is added/changed
+
 # Note to judges and others!
 
 If you are on a computer, I would recommend clicking [Here](./README.md) (if not already)

@@ -2,6 +2,7 @@
 
 #include "autons.hpp"
 #include "globals.hpp"
+#include "utils.hpp"
 
 int S_DRIVE_SPEED = 115;
 int S_TURN_SPEED = 90;
@@ -9,9 +10,9 @@ int S_SWING_SPEED = 90;
 
 void auton::skills::skillsv3() {
   S_DRIVE_SPEED = 90;
-  intakeSpin(127);
+  utils::set_intake(127);
   pros::delay(1000);
-  intakeBreak();
+  utils::set_intake(0);
 
   chassis.pid_drive_set(12_in, S_DRIVE_SPEED, false, true);
   chassis.pid_wait();
@@ -32,7 +33,7 @@ void auton::skills::skillsv3() {
   chassis.pid_turn_set(0, S_TURN_SPEED);
   chassis.pid_wait();
 
-  intakeSpin(127);
+  utils::set_intake(127);
 
   // drive (-600, -600) - ring
   chassis.pid_drive_set(24_in, S_DRIVE_SPEED);
@@ -85,7 +86,7 @@ void auton::skills::skillsv3() {
   goalGrab.set_value(0);
   chassis.pid_wait();
 
-  intakeBreak();
+  utils::set_intake(0);
 
   chassis.pid_drive_set(12_in, S_DRIVE_SPEED);
   chassis.pid_wait();
@@ -104,7 +105,7 @@ void auton::skills::skillsv3() {
   chassis.pid_turn_set(0, S_TURN_SPEED);
   chassis.pid_wait();
 
-  intakeSpin(127);
+  utils::set_intake(127);
 
   chassis.pid_drive_set(24_in, S_DRIVE_SPEED);
   chassis.pid_wait();
@@ -148,7 +149,7 @@ void auton::skills::skillsv3() {
   goalGrab.set_value(0);
   chassis.pid_wait();
 
-  intakeBreak();
+  utils::set_intake(0);
 
   pros::delay(500);
 
@@ -164,14 +165,14 @@ void auton::skills::skillsv3() {
   chassis.pid_turn_set(315, S_TURN_SPEED);
   chassis.pid_wait();
 
-  intakeSpin(127);
+  utils::set_intake(127);
 
   chassis.pid_drive_set(40_in, S_DRIVE_SPEED);
   chassis.pid_wait();
 
   pros::delay(350);
 
-  intakeBreak();
+  utils::set_intake(0);
 
   chassis.pid_turn_set(136, S_TURN_SPEED);
   chassis.pid_wait();
@@ -183,7 +184,7 @@ void auton::skills::skillsv3() {
   goalGrab.set_value(1);
   chassis.pid_wait();
 
-  intakeSpin(127);
+  utils::set_intake(127);
 
   chassis.pid_turn_set(120, S_TURN_SPEED);
   chassis.pid_wait();
@@ -229,7 +230,7 @@ void auton::skills::skillsv3() {
   chassis.pid_drive_set(-16_in, S_DRIVE_SPEED);
   chassis.pid_wait();
 
-  intakeBreak();
+  utils::set_intake(0);
 
   chassis.pid_drive_set(12_in, S_DRIVE_SPEED);
   chassis.pid_wait();

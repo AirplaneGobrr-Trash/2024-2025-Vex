@@ -5,10 +5,12 @@
 class AutonHelper {
  public:
   // Constructor
-  AutonHelper(const std::string& name, int r, int g, int b);
+  AutonHelper(const std::string& name, int r, int g, int b, int aType);
 
   // Adds an autonomous function
   void addAuton(const std::string& autonName, std::function<void()> func, const std::string& autonNameDesc);
+
+  int getType() const;
 
   // Prints all autonomous routines
   void listAutons() const;
@@ -35,6 +37,7 @@ class AutonHelper {
   };
 
   std::string name;                                                   // Name of the auton (e.g., "Blue", "Red", "Skills")
+  int aType;
   Color color;                                                        // RGB color associated with this auton
   std::vector<std::pair<std::string, std::function<void()>>> autons;  // Auton names and functions
   std::vector<std::pair<std::string, std::string>> autonsDesc;        // Auton names and desc
@@ -44,4 +47,7 @@ class AutonHelper {
 namespace utils {
 std::vector<AutonHelper> createAutons();
 std::vector<AutonHelper> getAutons();
+
+void set_intake(int speed);
+void intake_task();
 }
