@@ -117,7 +117,10 @@ void autonSelc() {
     uint16_t autonColor = auton[0];
     uint16_t autonType = auton[1];
 
-    master.print(0, 0, "%s %s %u %u %u %u....", m_autons[autonColor].getName(), m_autons[autonColor].getAutons()[autonType].first, autonColor, autonType, backDist.get(), backDist.get() - 1610);
+    std::chrono::duration<double> duration = endTime - start;
+    double seconds = duration.count();
+
+    master.print(0, 0, "%s %s %u %u %.2f....", m_autons[autonColor].getName(), m_autons[autonColor].getAutons()[autonType].first, autonColor, autonType, seconds);
     pros::delay(10);
   }
 }
@@ -140,6 +143,7 @@ void noCodeCheck() {
 }
 
 void initialize() {
+  noCodeCheck();
   master.rumble(".");
   m_autons = utils::createAutons();
   picker::render();
@@ -200,23 +204,6 @@ void autonomous() {
   // auton::blue::neg();
 }
 
-void color() {
-  while (true) {
-    printf("\n\n");
-    
-    printf("Hue value: %lf \n", liftColor.get_hue());
-    printf("\n");
-
-
-    pros::c::optical_rgb_s_t rgb_value = liftColor.get_rgb();
-    printf("Red value: %lf \n", rgb_value.red);
-    printf("Green value: %lf \n", rgb_value.green);
-    printf("Blue value: %lf \n", rgb_value.blue);
-    printf("Brightness value: %lf \n", rgb_value.brightness);
-    pros::delay(100);
-  }
-}
-
 void opcontrol() {
   runningAuton = false;
   if (noCode) return;
@@ -227,8 +214,6 @@ void opcontrol() {
 
   pros::Task::create(lift_task);
   pros::Task::create(utils::intake_task);
-
-  pros::Task::create(color);
 
   while (true) {
     // Check if we are connected to a field

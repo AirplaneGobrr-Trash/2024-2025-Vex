@@ -92,7 +92,7 @@ std::vector<AutonHelper> utils::createAutons() {
 
   // Create "Skills" Autons
   AutonHelper skills("Skills", 204, 204, 0, 3);
-  // skills.addAuton("SkillsV3", auton::skills::skillsv3, "Skills V3\nI hate (mondays) skills....");
+  skills.addAuton("SkillsV4", auton::skills::skillsv4, "Skills V3\nI hate (mondays) skills....");
 
   // Add the AutonHelpers to the autons
   autons = {blue, red, skills};
@@ -119,6 +119,12 @@ void eject(int type) {
   pros::delay(300);
   raw_set_intake(target_speed);
   printf("Ejected %d", type);
+}
+
+bool doAntiJam = true;
+
+void utils::antiJam(bool on) {
+  doAntiJam = on;
 }
 
 void utils::intake_task() {
@@ -157,7 +163,7 @@ void utils::intake_task() {
 
     // Run intake full power in opposite direction for outtake_time ms when jammed, then
     // set intake back to normal
-    if (is_jammed && isRunningAuton()) {
+    if (is_jammed && doAntiJam && isRunningAuton()) {
       raw_set_intake(-127 * ez::util::sgn(target_speed));
       jam_counter += ez::util::DELAY_TIME;
       if (jam_counter > outtake_time) {

@@ -7,20 +7,21 @@
         "${workspaceFolder}/include",
         "c:\\Users\\AirplaneGobrr\\Documents\\Github\\2024-2025-Vex\\include",
         "c:\\Users\\airplanegobrr\\Documents\\GitHub\\2024-2025-Vex\\include",
-        "c:\\Users\\airplanegobrr\\Documents\\GitHub\\2024-2025-Vex\\include"
+        "c:\\Users\\airplanegobrr\\Documents\\GitHub\\2024-2025-Vex\\include",
+        "c:\\Users\\AirplaneGobrr\\Documents\\GitHub\\2024-2025-Vex\\include"
       ],
       "defines": [
         "_DEBUG",
         "UNICODE",
         "_UNICODE"
       ],
-      "compilerPath": "c:\\Users\\airplanegobrr\\AppData\\Roaming\\Code\\User\\globalStorage\\sigbots.pros\\install\\pros-toolchain-windows\\usr\\bin\\arm-none-eabi-g++",
+      "compilerPath": "c:\\Users\\AirplaneGobrr\\AppData\\Roaming\\Code\\User\\globalStorage\\sigbots.pros\\install\\pros-toolchain-windows\\usr\\bin\\arm-none-eabi-g++",
       "cStandard": "gnu11",
       "cppStandard": "gnu++20",
       "intelliSenseMode": "gcc-arm",
       "browse": {
         "path": [
-          "c:\\Users\\airplanegobrr\\Documents\\GitHub\\2024-2025-Vex"
+          "c:\\Users\\AirplaneGobrr\\Documents\\GitHub\\2024-2025-Vex"
         ],
         "limitSymbolsToIncludedHeaders": true,
         "databaseFilename": ""

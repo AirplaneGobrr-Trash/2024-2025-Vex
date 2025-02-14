@@ -14,8 +14,9 @@ lv_obj_t * autonTabView;
 lv_obj_t * currentAuton;
 lv_obj_t * debugLabel;
 
-uint16_t maxBlue = 4;
-uint16_t maxRed = 4;
+uint16_t maxBlue = 2;
+uint16_t maxRed = 2;
+uint16_t maxSkills = 1;
 
 std::vector<std::pair<std::string, lv_obj_t *>> tabs = {};
 
@@ -46,6 +47,7 @@ void renderAuton(lv_obj_t * autonsTab) {
 
         if (name == "Blue") maxBlue = autonInfo.getCount();
         if (name == "Red") maxRed = autonInfo.getCount();
+        if (name == "Skills") maxSkills = autonInfo.getCount();
 
 
         // Add pos, neg, etc... autons to tabs
@@ -201,10 +203,23 @@ void picker::next() {
             activeRedTab++;
             if (activeRedTab == maxRed) {
                 lv_tabview_set_act(redTab, 0, LV_ANIM_OFF);
-                lv_tabview_set_act(autonTabView, 0, LV_ANIM_OFF);
+                lv_tabview_set_act(autonTabView, 2, LV_ANIM_OFF);
                 break;
             } else {
                 lv_tabview_set_act(redTab, activeRedTab, LV_ANIM_OFF);
+                break;
+            }
+        }
+        case 2: {
+            lv_obj_t * skillsTab = tabs[2].second;
+            uint16_t activeSkillsTab = lv_tabview_get_tab_act(skillsTab);
+            activeSkillsTab++;
+            if (activeSkillsTab == maxSkills) {
+                lv_tabview_set_act(skillsTab, 0, LV_ANIM_OFF);
+                lv_tabview_set_act(autonTabView, 0, LV_ANIM_OFF);
+                break;
+            } else {
+                lv_tabview_set_act(skillsTab, activeSkillsTab, LV_ANIM_OFF);
                 break;
             }
         }

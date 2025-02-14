@@ -50,4 +50,5 @@ std::vector<AutonHelper> getAutons();
 
 void set_intake(int speed);
 void intake_task();
+void antiJam(bool on);
 }

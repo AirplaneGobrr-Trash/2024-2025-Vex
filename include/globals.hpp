@@ -40,6 +40,6 @@ extern pros::adi::DigitalOut intakeLift;
 extern pros::adi::DigitalIn autonButton;
 
 
-inline int liftLoad = 4200;
-inline int liftScoreMain = 14500;
+inline int liftLoad = 5000;
+inline int liftScoreMain = 15500;
 inline int liftScore = 21000;
