@@ -14,19 +14,19 @@ void auton::blue::pos() {
   chassis.pid_turn_set(-318, TURN_SPEED);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(8_in, DRIVE_SPEED);
+  chassis.pid_drive_set(5_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
 
   // Score wall ring
   liftPID.target_set(liftScore+300);
   pros::delay(600);
 
-  chassis.pid_drive_set(-6_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-3_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
 
   liftPID.target_set(0);
 
-  chassis.pid_turn_set(-280, TURN_SPEED);
+  chassis.pid_turn_set(-285, TURN_SPEED);
   chassis.pid_wait_quick_chain();
   pros::delay(150);
 
@@ -44,10 +44,10 @@ void auton::blue::pos() {
 
   utils::set_intake(127);
 
-  chassis.pid_drive_set(16_in, DRIVE_SPEED);
+  chassis.pid_drive_set(20_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(-12_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-16_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
 
   // Face wall
@@ -109,7 +109,7 @@ void auton::blue::neg() {
   chassis.pid_wait_quick_chain();
   pros::delay(150);
 
-  chassis.pid_drive_set(-34_in, 127);
+  chassis.pid_drive_set(-40_in, 127);
   chassis.pid_wait_until(-12_in);
   chassis.pid_speed_max_set(DRIVE_SPEED/3);
   chassis.pid_wait_until(-26_in);
@@ -117,7 +117,20 @@ void auton::blue::neg() {
   chassis.pid_wait();
 
   chassis.pid_turn_set(315_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  utils::set_intake(127);
+
+  chassis.pid_swing_set(ez::e_swing::LEFT_SWING, 15, SWING_SPEED, 40);
   chassis.pid_wait_quick_chain();
+
+  // chassis.pid_drive_set(2_in, DRIVE_SPEED);
+  // chassis.pid_wait();
+
+  // chassis.pid_swing_set(ez::e_swing::LEFT_SWING, 90, SWING_SPEED, 60);
+  // chassis.pid_wait_quick_chain();
+
+  return;
 
   utils::set_intake(127);
 
@@ -146,15 +159,24 @@ void auton::blue::neg() {
   chassis.pid_drive_set(-12_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(220_deg, TURN_SPEED);
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(46_in, DRIVE_SPEED);
-  chassis.pid_wait_until(8);
-  liftPID.target_set(liftScoreMain+2500);
-  chassis.pid_wait_until(22);
-  utils::set_intake(-127);
-  chassis.pid_wait();
+  chassis.pid_drive_set(70_in, DRIVE_SPEED);
+  chassis.pid_wait_until(45_in);
+  intakeLift.set_value(1);
+  chassis.pid_speed_max_set(DRIVE_SPEED/1.5);
+  chassis.pid_wait_quick_chain();
+
+  // chassis.pid_turn_set(220_deg, TURN_SPEED);
+  // chassis.pid_wait_quick_chain();
+
+  // chassis.pid_drive_set(46_in, DRIVE_SPEED);
+  // chassis.pid_wait_until(8);
+  // liftPID.target_set(liftScoreMain+2500);
+  // chassis.pid_wait_until(22);
+  // utils::set_intake(-127);
+  // chassis.pid_wait();
 
   utils::set_intake(0);
 

@@ -39,6 +39,11 @@ void controllerButtons2() {
       lift_wait();
     }
 
+    if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_Y)) {
+      liftPID.target_set(liftRingBypass);
+      lift_wait();
+    }
+
     if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_RIGHT)) {
       liftPID.target_set(liftScoreMain);
       lift_wait();
@@ -110,9 +115,9 @@ void autonSelc() {
       pros::delay(500);
       continue;
     }
-    if (autonButton.get_new_press() || master.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_Y)) {
-      picker::next();
-    }
+    // if (autonButton.get_new_press() || master.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_Y)) {
+    //   picker::next();
+    // }
     std::vector<uint16_t> auton = picker::getAuton();
     uint16_t autonColor = auton[0];
     uint16_t autonType = auton[1];
@@ -168,7 +173,7 @@ void initialize() {
 
   // Look at your horizontal tracking wheel and decide if it's in front of the midline of your robot or behind it
   //  - change `back` to `front` if the tracking wheel is in front of the midline
-  chassis.odom_tracker_back_set(&horiz_tracker);
+  chassis.odom_tracker_back_set(&vert_tracker);
 
   chassis.drive_imu_calibrate(false);
   chassis.drive_sensor_reset();

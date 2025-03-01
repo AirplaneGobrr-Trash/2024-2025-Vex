@@ -12,7 +12,7 @@ int getAngle();
 void lift_task();
 
 extern ez::Drive chassis;
-extern ez::tracking_wheel horiz_tracker;
+extern ez::tracking_wheel vert_tracker;
 
 extern pros::Controller masterController;
 
@@ -39,7 +39,12 @@ extern pros::adi::DigitalOut intakeLift;
 //In
 extern pros::adi::DigitalIn autonButton;
 
-
+// Load rings into the two bar
 inline int liftLoad = 5000;
+// Ring loaded just above the og load pos, nice for having a ring loaded but the intake be able to load on goals still
+inline int liftRingBypass = 7300;
+
+// Score ring onto colored wall stake
 inline int liftScoreMain = 15500;
+// Score ring onto wall stake
 inline int liftScore = 21000;

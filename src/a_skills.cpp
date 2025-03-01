@@ -124,7 +124,7 @@ void skillsv4_1() {
 void skillsv4_2() {
   // chassis.odom_xyt_set(-46_in, -54_in, 180_deg);
 
-  chassis.pid_drive_set(-78_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-76_in, DRIVE_SPEED);
   chassis.pid_wait_until(-54);
   chassis.pid_speed_max_set(DRIVE_SPEED/3);
   chassis.pid_wait_until(-76);
@@ -144,14 +144,14 @@ void skillsv4_2() {
   chassis.pid_turn_set(65, TURN_SPEED);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_drive_set(54_in, DRIVE_SPEED);
+  chassis.pid_drive_set(57_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_turn_set(290, TURN_SPEED);
+  chassis.pid_turn_set(285, TURN_SPEED);
   chassis.pid_wait_quick_chain();
 
   // Drive to wall stake
-  chassis.pid_drive_set(22_in, DRIVE_SPEED);
+  chassis.pid_drive_set(20_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
 
   liftPID.target_set(liftLoad);
@@ -173,7 +173,7 @@ void skillsv4_2() {
 
   lift_wait();
 
-  chassis.pid_drive_set(-12_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
 
   liftPID.target_set(0);
@@ -223,7 +223,7 @@ void skillsv4_3() {
 
   utils::set_intake(127);
 
-  chassis.pid_drive_set(35_in, DRIVE_SPEED);
+  chassis.pid_drive_set(36_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
 
   chassis.pid_turn_set(135, TURN_SPEED);
@@ -232,7 +232,7 @@ void skillsv4_3() {
   liftPID.target_set(liftLoad);
   utils::antiJam(false);
 
-  chassis.pid_drive_set(44_in, DRIVE_SPEED);
+  chassis.pid_drive_set(46_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   utils::set_intake(0);
@@ -261,7 +261,7 @@ void skillsv4_3() {
   liftPID.target_set(liftScore);
   lift_wait();
 
-  chassis.pid_drive_set(-9_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-7_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   liftPID.target_set(0);
