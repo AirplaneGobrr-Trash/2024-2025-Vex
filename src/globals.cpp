@@ -6,7 +6,7 @@
 
 // Drive setup
 ez::Drive chassis({-11, 12, -14}, {16, -17, 18}, 20, 3.25, 480);
-ez::tracking_wheel vert_tracker(-10, 2.175, 1.0);  // This tracking wheel is perpendicular to the drive wheels
+ez::tracking_wheel vert_tracker(10, 2.175, 0);  // This tracking wheel is perpendicular to the drive wheels
 
 // Controller setup
 pros::Controller masterController(pros::E_CONTROLLER_MASTER);

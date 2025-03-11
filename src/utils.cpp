@@ -83,12 +83,16 @@ std::vector<AutonHelper> utils::createAutons() {
   AutonHelper blue("Blue", 0, 0, 255, 1);
   blue.addAuton("neg", auton::blue::neg, "Neg\n5 - ring\n2 - tops");
   blue.addAuton("pos", auton::blue::pos, "Pos\n3 - ring\n2 - tops");
+  blue.addAuton("pos_rush", auton::blue::pos_rush, "Post Rush");
+  blue.addAuton("blue_solo", auton::blue::solo, "Solo");
   
 
   // Create "Red" Autons
   AutonHelper red("Red", 255, 0, 0, 2);
   red.addAuton("neg", auton::red::neg, "Neg\n5 - ring\n2 - tops");
   red.addAuton("pos", auton::red::pos, "Pos\n3 - ring\n2 - tops");
+  red.addAuton("pos_rush", auton::red::pos_rush, "Pos Rush");
+  red.addAuton("red_solo", auton::red::solo, "Solo");
 
   // Create "Skills" Autons
   AutonHelper skills("Skills", 204, 204, 0, 3);

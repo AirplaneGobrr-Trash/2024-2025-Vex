@@ -97,14 +97,6 @@ void controllerButtons() {
       ringGrab.set_value(0);
     }
 
-    if (masterController.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A)) {
-      if (isIntakeUp)
-        intakeLift.set_value(1);
-      else
-        intakeLift.set_value(0);
-      isIntakeUp = !isIntakeUp;
-    }
-
     pros::delay(100);
   }
 }
@@ -115,9 +107,9 @@ void autonSelc() {
       pros::delay(500);
       continue;
     }
-    // if (autonButton.get_new_press() || master.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_Y)) {
-    //   picker::next();
-    // }
+    if (autonButton.get_new_press() || master.get_digital_new_press(pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A)) {
+      picker::next();
+    }
     std::vector<uint16_t> auton = picker::getAuton();
     uint16_t autonColor = auton[0];
     uint16_t autonType = auton[1];
@@ -173,7 +165,7 @@ void initialize() {
 
   // Look at your horizontal tracking wheel and decide if it's in front of the midline of your robot or behind it
   //  - change `back` to `front` if the tracking wheel is in front of the midline
-  chassis.odom_tracker_back_set(&vert_tracker);
+  chassis.odom_tracker_right_set(&vert_tracker);
 
   chassis.drive_imu_calibrate(false);
   chassis.drive_sensor_reset();
@@ -203,6 +195,8 @@ void autonomous() {
   uint16_t autonColor = auton[0];
   uint16_t autonType = auton[1];
 
+  // pros::delay(2000);
+
   start = std::chrono::high_resolution_clock::now();
   m_autons[autonColor].getAutons()[autonType].second();
   runningAuton = false;
@@ -219,6 +213,8 @@ void opcontrol() {
 
   pros::Task::create(lift_task);
   pros::Task::create(utils::intake_task);
+
+  intakeLift.set_value(0);
 
   while (true) {
     // Check if we are connected to a field

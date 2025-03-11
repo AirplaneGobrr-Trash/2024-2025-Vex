@@ -52,7 +52,7 @@ void skillsv4_1() {
   chassis.pid_wait();
 
   // wall stake
-  chassis.pid_drive_set(17_in, DRIVE_SPEED);
+  chassis.pid_drive_set(21_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
 
   liftPID.target_set(liftLoad);
@@ -147,7 +147,7 @@ void skillsv4_2() {
   chassis.pid_drive_set(57_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
 
-  chassis.pid_turn_set(285, TURN_SPEED);
+  chassis.pid_turn_set(280, TURN_SPEED);
   chassis.pid_wait_quick_chain();
 
   // Drive to wall stake

@@ -93,28 +93,32 @@ void old(){
     // renderSkillsTab(skillsTab);
 }
 
+void setDebugText() {
+    char buf[5000];
+    snprintf(buf, sizeof(buf), "Battery Level: %2.f\n Battery Draw: %u\nBattery Temp: %2.f\nTwobarRot:%u\nX:%2.f\nY:%2.f",
+        pros::battery::get_capacity(), 
+        pros::battery::get_current(), 
+        pros::battery::get_temperature(),
+        twoBarRot.get_angle(),
+        chassis.odom_x_get(), 
+        chassis.odom_y_get()
+    );
+    lv_label_set_text(debugLabel, buf);
+}
+
+
 void renderDebug(lv_obj_t * debugTab) {
     currentAuton = lv_label_create(debugTab);
     lv_label_set_text(currentAuton, "Current None");
 
     debugLabel = lv_label_create(debugTab);
-    lv_obj_align(debugLabel, LV_ALIGN_DEFAULT, 0, 10);
-
-    char buf[1000];
-    sprintf(
-        buf, "Battery Level: %u\n Battery Draw: %u\nBattery Temp: %u\nTwobarRot:%u\n",
-        pros::battery::get_capacity(), pros::battery::get_current(), pros::battery::get_temperature(),twoBarRot.get_angle()
-    );
-    lv_label_set_text(debugLabel, buf);
+    lv_obj_align(debugLabel, LV_ALIGN_DEFAULT, 0, 15);
+    
+    setDebugText();
 }
 
 void picker::update() {
-    char debugBuf[1000];
-    sprintf(
-        debugBuf, "Battery Level: %u\n Battery Draw: %u\nBattery Temp: %u",
-        pros::battery::get_capacity(), pros::battery::get_current(), pros::battery::get_temperature()
-    );
-    lv_label_set_text(debugLabel, debugBuf);
+    setDebugText();
 
     picker::getAuton();
 }
@@ -122,7 +126,7 @@ void picker::update() {
 void updater(){
     while (true){
         picker::update();
-        pros::delay(500);
+        pros::delay(50);
     }
 }
 
