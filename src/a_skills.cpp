@@ -1,12 +1,9 @@
 #include "a_skills.hpp"
 
+#include "EZ-Template/drive/drive.hpp"
 #include "autons.hpp"
 #include "globals.hpp"
 #include "utils.hpp"
-
-int S_DRIVE_SPEED = 115;
-int S_TURN_SPEED = 90;
-int S_SWING_SPEED = 90;
 
 void skillsv4_1() {
   chassis.odom_xyt_set(-54_in, -7_in, 0_deg);
@@ -16,12 +13,12 @@ void skillsv4_1() {
 
   liftPID.target_set(liftScore);
 
-  chassis.pid_drive_set(2_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(2_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   lift_wait();
 
-  chassis.pid_drive_set(-4_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-4_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   liftPID.target_set(0);
@@ -344,6 +341,172 @@ void skillsv4_3() {
   chassis.pid_wait_quick_chain();
 }
 
+
+// Scores 
+void skillsv5_1() {
+  chassis.odom_xyt_set(-59_in, -7_in, 305_deg);
+
+  liftPID.target_set(liftScore + 300);
+
+  chassis.pid_odom_set(6_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set({-69, 0}, fwd, TURN_SPEED);
+  chassis.pid_wait_quick();
+
+  chassis.pid_odom_set(-34_in, DRIVE_SPEED);
+  chassis.pid_wait_until(-28);
+  goalGrab.set_value(1);
+  chassis.pid_wait_quick();
+
+  liftPID.target_set(0);
+
+  utils::set_intake(127);
+
+  chassis.pid_turn_set({-23.5, -23.5}, fwd, TURN_SPEED);
+  chassis.pid_wait_quick();
+
+  chassis.pid_odom_set({
+    {{-23.5_in, -23.5_in}, fwd, DRIVE_SPEED},
+    {{23.5_in, -47_in}, fwd, DRIVE_SPEED},
+    {{0_in, -57_in}, fwd, DRIVE_SPEED}
+  },
+    true);
+  chassis.pid_wait_quick();
+
+  // Face wall stake
+  chassis.pid_turn_set({0, -69}, fwd, TURN_SPEED);
+  chassis.pid_wait_quick();
+
+  // <Score wall stake here>
+
+  chassis.pid_odom_set({
+    {{0_in, -47_in}, rev, DRIVE_SPEED}, // Back up from wall stake
+    {{-59_in, -47_in}, fwd, DRIVE_SPEED}, // Grab 3 rings
+    {{-47_in, -58_in}, fwd, DRIVE_SPEED}, // Grab 4th ring
+    {{-62_in, -61_in}, rev, DRIVE_SPEED}, // Back into goal place
+  },
+    true);
+  chassis.pid_wait_quick();
+
+  goalGrab.set_value(0);
+
+  chassis.pid_odom_set({
+    {{-47.5_in, -36_in}, fwd, DRIVE_SPEED}
+  },
+    true);
+  chassis.pid_wait_quick();
+  // part2...
+}
+
+void skillsv5_2() {
+  // go fwd to goal cus stupid thing
+  chassis.pid_odom_set({
+    {{-47_in, 0_in}, fwd, DRIVE_SPEED}
+  },
+    true);
+  chassis.pid_wait_quick();
+
+  // Grab goal
+  chassis.pid_odom_set(-34_in, DRIVE_SPEED);
+  chassis.pid_wait_until(-28);
+  goalGrab.set_value(1);
+  chassis.pid_wait_quick();
+
+  chassis.pid_odom_set({
+    {{-23.5_in, 23.5_in}, fwd, DRIVE_SPEED},
+    {{-23.5_in, 47_in}, fwd, DRIVE_SPEED},
+    {{0_in, 57_in}, fwd, DRIVE_SPEED},
+  },
+    true);
+  chassis.pid_wait_quick();
+
+  // Face wall stake
+  chassis.pid_turn_set({0, 69}, fwd, TURN_SPEED);
+  chassis.pid_wait_quick();
+
+  // <Score wall stake here>
+
+  chassis.pid_odom_set({
+    {{0_in, 47_in}, rev, DRIVE_SPEED}, // Back up from wall stake
+    {{-59_in, 47_in}, fwd, DRIVE_SPEED}, // Grab 3 rings
+    {{-47_in, 59_in}, fwd, DRIVE_SPEED}, // Grab 4th ring
+    {{-62_in, 61_in}, rev, DRIVE_SPEED}, // Back into goal place
+  },
+    true);
+  chassis.pid_wait_quick();
+
+  goalGrab.set_value(0);
+
+  chassis.pid_odom_set({
+    {{-23.5_in, 47_in}, fwd, DRIVE_SPEED}, // Back up from wall stake
+  }, true);
+  chassis.pid_wait_quick();
+}
+
+void skillsv5_3() {
+  
+  chassis.pid_odom_set({
+    {{23.5_in, 23.5_in}, fwd, DRIVE_SPEED}, // Back up from wall stake
+  }, true);
+  chassis.pid_wait_quick();
+
+  chassis.pid_turn_set({41, 3.5}, rev, TURN_SPEED);
+  chassis.pid_wait_quick();
+
+  chassis.pid_odom_set(-34_in, DRIVE_SPEED);
+  chassis.pid_wait_until(-28);
+  goalGrab.set_value(1);
+  chassis.pid_wait_quick();
+
+  chassis.pid_turn_set({64, 0}, fwd, TURN_SPEED);
+  chassis.pid_wait_quick();
+
+  // <Score colored ring here>
+
+  chassis.pid_odom_set({
+    {{48.5_in, 0_in}, rev, DRIVE_SPEED}, // 0 - Backup from wall
+    {{47_in, 47_in}, fwd, DRIVE_SPEED/3}, // 1 - Grab red right
+    {{11_in, 12_in}, fwd, DRIVE_SPEED}, // 2 - Goto ladder
+    {{0_in, 0_in}, fwd, DRIVE_SPEED}, // 3 - Under ladder
+  }, true);
+  chassis.pid_wait_until_index_started(2);
+  utils::set_intake(0);
+  chassis.pid_wait_until_index(3);
+  utils::set_intake(127);
+  chassis.pid_wait_quick();
+
+  chassis.pid_turn_set({23.5, -23.5}, fwd, TURN_SPEED);
+  chassis.pid_wait_quick();
+
+  utils::set_intake(0);
+
+  chassis.pid_odom_set({
+    {{23.5_in, -23.5_in}, fwd, DRIVE_SPEED}, // 0 
+    {{47.5_in, -47_in}, fwd, DRIVE_SPEED/3}, // 1
+    {{47.5_in, -59_in}, fwd, DRIVE_SPEED/3}, // 1
+    {{47.5_in, -47_in}, rev, DRIVE_SPEED/3}, // 1
+    {{59_in, -47.5_in}, fwd, DRIVE_SPEED/3}, // 1
+    {{47.5_in, -47_in}, rev, DRIVE_SPEED/3}, // 1
+    {{63_in, -63_in}, rev, DRIVE_SPEED/3}, // 1
+  }, true);
+  chassis.pid_wait_quick();
+
+  goalGrab.set_value(0);
+
+  chassis.pid_turn_set({8, -15.5}, fwd, TURN_SPEED);
+  chassis.pid_wait_quick();
+
+  // hang here!
+
+}
+
+void auton::skills::skillsv5() {
+  skillsv5_1();
+  skillsv5_2();
+  skillsv5_3();
+}
+
 void auton::skills::skillsv4() {
   skillsv4_1();
   skillsv4_2();
@@ -351,20 +514,20 @@ void auton::skills::skillsv4() {
 }
 
 void auton::skills::skillsv3() {
-  S_DRIVE_SPEED = 90;
+  DRIVE_SPEED = 90;
   utils::set_intake(127);
   pros::delay(1000);
   utils::set_intake(0);
 
-  chassis.pid_drive_set(12_in, S_DRIVE_SPEED, false, true);
+  chassis.pid_drive_set(12_in, DRIVE_SPEED, false, true);
   chassis.pid_wait();
 
   // Turn to (-1200, -600) - goal
-  chassis.pid_turn_set(90, S_TURN_SPEED);
+  chassis.pid_turn_set(90, TURN_SPEED);
   chassis.pid_wait();
 
   // Drive to (-1200, -600) - goal
-  chassis.pid_drive_set(-22_in, S_DRIVE_SPEED, false, true);
+  chassis.pid_drive_set(-22_in, DRIVE_SPEED, false, true);
   chassis.pid_wait_until(-4_in);
   chassis.pid_speed_max_set(30);
   chassis.pid_wait_until(-16_in);
@@ -372,71 +535,71 @@ void auton::skills::skillsv3() {
   chassis.pid_wait();
 
   // turn (-600, -600) - ring
-  chassis.pid_turn_set(0, S_TURN_SPEED);
+  chassis.pid_turn_set(0, TURN_SPEED);
   chassis.pid_wait();
 
   utils::set_intake(127);
 
   // drive (-600, -600) - ring
-  chassis.pid_drive_set(24_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   // turn (-600, -1200) - ring
-  chassis.pid_turn_set(-90, S_TURN_SPEED);
+  chassis.pid_turn_set(-90, TURN_SPEED);
   chassis.pid_wait();
 
   // drive (-600, -1200) - ring
-  chassis.pid_drive_set(24_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   // turn (-1200, -1200) - ring
-  chassis.pid_turn_set(-180, S_TURN_SPEED);
+  chassis.pid_turn_set(-180, TURN_SPEED);
   chassis.pid_wait();
 
   // drive (-1200, -1200) - ring
-  chassis.pid_drive_set(24_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   pros::delay(1000);
 
-  chassis.pid_drive_set(12_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   // backup from (-1200, -1200) to (-1500, -1200)
-  chassis.pid_drive_set(-16_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-16_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   // turn (-1500, -1200) - ring
-  chassis.pid_turn_set(-90, S_TURN_SPEED);
+  chassis.pid_turn_set(-90, TURN_SPEED);
   chassis.pid_wait();
 
   // drive (-1500, -1200) - ring
-  chassis.pid_drive_set(12_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   // back up to put goal in coner
-  chassis.pid_drive_set(-14_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-14_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   // face coner with goal
-  chassis.pid_turn_set(-315, S_TURN_SPEED);
+  chassis.pid_turn_set(-315, TURN_SPEED);
   chassis.pid_wait();
 
   // drive and drop goal
-  chassis.pid_drive_set(-20_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-20_in, DRIVE_SPEED);
   chassis.pid_wait_until(-2);
   goalGrab.set_value(0);
   chassis.pid_wait();
 
   utils::set_intake(0);
 
-  chassis.pid_drive_set(12_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(-90, S_TURN_SPEED);
+  chassis.pid_turn_set(-90, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-72_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-72_in, DRIVE_SPEED);
   chassis.pid_wait_until(-50_in);
   chassis.pid_speed_max_set(30);
   chassis.pid_wait_until(-70_in);
@@ -444,49 +607,49 @@ void auton::skills::skillsv3() {
   chassis.pid_wait();
 
   // turn
-  chassis.pid_turn_set(0, S_TURN_SPEED);
+  chassis.pid_turn_set(0, TURN_SPEED);
   chassis.pid_wait();
 
   utils::set_intake(127);
 
-  chassis.pid_drive_set(24_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(90, S_TURN_SPEED);
+  chassis.pid_turn_set(90, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(24_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(180, S_TURN_SPEED);
+  chassis.pid_turn_set(180, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(24_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   pros::delay(1000);
 
-  chassis.pid_drive_set(12_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-14_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-14_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(90, S_TURN_SPEED);
+  chassis.pid_turn_set(90, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(12_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-10_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   pros::delay(500);
 
-  chassis.pid_turn_set(315, S_TURN_SPEED);
+  chassis.pid_turn_set(315, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-16_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-16_in, DRIVE_SPEED);
   chassis.pid_wait_until(-2);
   goalGrab.set_value(0);
   chassis.pid_wait();
@@ -495,31 +658,31 @@ void auton::skills::skillsv3() {
 
   pros::delay(500);
 
-  chassis.pid_drive_set(6_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(6_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(360, S_TURN_SPEED);
+  chassis.pid_turn_set(360, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(46_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(46_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(315, S_TURN_SPEED);
+  chassis.pid_turn_set(315, TURN_SPEED);
   chassis.pid_wait();
 
   utils::set_intake(127);
 
-  chassis.pid_drive_set(40_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(40_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   pros::delay(350);
 
   utils::set_intake(0);
 
-  chassis.pid_turn_set(136, S_TURN_SPEED);
+  chassis.pid_turn_set(136, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-36_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-36_in, DRIVE_SPEED);
   chassis.pid_wait_until(-20);
   chassis.pid_speed_max_set(20);
   chassis.pid_wait_until(-32);
@@ -528,61 +691,61 @@ void auton::skills::skillsv3() {
 
   utils::set_intake(127);
 
-  chassis.pid_turn_set(120, S_TURN_SPEED);
+  chassis.pid_turn_set(120, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(52_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(52_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(0, S_TURN_SPEED);
+  chassis.pid_turn_set(0, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(24_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   pros::delay(1000);
 
-  chassis.pid_drive_set(12_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-14_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-14_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(90, S_TURN_SPEED);
+  chassis.pid_turn_set(90, TURN_SPEED);
 
-  chassis.pid_drive_set(12_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-8_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-8_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(225, S_TURN_SPEED);
+  chassis.pid_turn_set(225, TURN_SPEED);
   chassis.pid_wait();
 
   pros::delay(500);
 
   goalGrab.set_value(0);
 
-  chassis.pid_drive_set(-8_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-8_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(8_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(8_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-16_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-16_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   utils::set_intake(0);
 
-  chassis.pid_drive_set(12_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(12_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(98, S_TURN_SPEED);
+  chassis.pid_turn_set(98, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-114_in, S_DRIVE_SPEED);
+  chassis.pid_drive_set(-114_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(190, S_TURN_SPEED);
+  chassis.pid_turn_set(190, TURN_SPEED);
   chassis.pid_wait();
 }

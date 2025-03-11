@@ -97,6 +97,7 @@ std::vector<AutonHelper> utils::createAutons() {
   // Create "Skills" Autons
   AutonHelper skills("Skills", 204, 204, 0, 3);
   skills.addAuton("SkillsV4", auton::skills::skillsv4, "Skills V4\nI hate (mondays) skills....");
+  skills.addAuton("SkillsV5", auton::skills::skillsv5, "Skills V5\nI hate (mondays) skills....");
 
   // Add the AutonHelpers to the autons
   autons = {blue, red, skills};
