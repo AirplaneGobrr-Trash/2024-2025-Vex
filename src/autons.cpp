@@ -88,3 +88,9 @@ void auton::swing(bool flipped, int degrees, int speed) {
     chassis.pid_swing_set(ez::LEFT_SWING, degrees, SWING_SPEED, speed);
   }
 }
+
+
+void auton::off_line(){
+  chassis.pid_drive_set(24_in, DRIVE_SPEED);
+  chassis.pid_wait();
+}

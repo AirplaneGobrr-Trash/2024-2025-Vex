@@ -344,18 +344,15 @@ void skillsv4_3() {
 
 // Scores 
 void skillsv5_1() {
-  chassis.odom_xyt_set(-59_in, -7_in, 305_deg);
+  chassis.odom_xyt_set(-59_in, -11_in, 315_deg);
 
-  liftPID.target_set(liftScore + 300);
+  liftPID.target_set(liftScore);
 
-  chassis.pid_odom_set(6_in, DRIVE_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set({-69, 0}, fwd, TURN_SPEED);
+  chassis.pid_odom_set(2_in, DRIVE_SPEED);
   chassis.pid_wait_quick();
 
-  chassis.pid_odom_set(-34_in, DRIVE_SPEED);
-  chassis.pid_wait_until(-28);
+  chassis.pid_odom_set(-16_in, DRIVE_SPEED);
+  chassis.pid_wait_until(-10);
   goalGrab.set_value(1);
   chassis.pid_wait_quick();
 
@@ -367,26 +364,41 @@ void skillsv5_1() {
   chassis.pid_wait_quick();
 
   chassis.pid_odom_set({
-    {{-23.5_in, -23.5_in}, fwd, DRIVE_SPEED},
-    {{23.5_in, -47_in}, fwd, DRIVE_SPEED},
-    {{0_in, -57_in}, fwd, DRIVE_SPEED}
+    {{-24.5_in, -23.5_in}, fwd, DRIVE_SPEED}, // Grab ring 1
+    {{26_in, -47_in}, fwd, DRIVE_SPEED}, // Grab far ring 2
+    {{5_in, -40_in}, fwd, DRIVE_SPEED}, // Wall line up
+    {{5.5_in, -64_in}, fwd, DRIVE_SPEED}, // Wall fwd
   },
-    true);
+  true);
+  chassis.pid_wait_until_index_started(2);
+  utils::antiJam(false);
+
+  liftPID.target_set(liftLoad);
   chassis.pid_wait_quick();
 
-  // Face wall stake
-  chassis.pid_turn_set({0, -69}, fwd, TURN_SPEED);
-  chassis.pid_wait_quick();
+  pros::delay(500);
 
-  // <Score wall stake here>
+  utils::set_intake(0);
+
+  liftPID.target_set(liftScore);
+
+  pros::delay(500);
+
+  chassis.pid_odom_set(-2, 30);
+  chassis.pid_wait_quick();
 
   chassis.pid_odom_set({
-    {{0_in, -47_in}, rev, DRIVE_SPEED}, // Back up from wall stake
-    {{-59_in, -47_in}, fwd, DRIVE_SPEED}, // Grab 3 rings
-    {{-47_in, -58_in}, fwd, DRIVE_SPEED}, // Grab 4th ring
-    {{-62_in, -61_in}, rev, DRIVE_SPEED}, // Back into goal place
+    {{4_in, -45_in}, rev, DRIVE_SPEED}, // Back up from wall stake
+    {{-24_in, -52_in}, fwd, DRIVE_SPEED}, // Line up for 3 rings
+    {{-60_in, -52_in}, fwd, DRIVE_SPEED/2}, // Grab 3 rings
+    {{-44_in, -62_in}, fwd, DRIVE_SPEED/2}, // Grab 4th ring
+    {{-65_in, -65_in}, rev, DRIVE_SPEED/2}, // Back into goal place
   },
-    true);
+  true);
+  chassis.pid_wait_until_index(0);
+  utils::set_intake(127);
+  liftPID.target_set(0);
+  utils::antiJam(true);
   chassis.pid_wait_quick();
 
   goalGrab.set_value(0);
@@ -402,60 +414,84 @@ void skillsv5_1() {
 void skillsv5_2() {
   // go fwd to goal cus stupid thing
   chassis.pid_odom_set({
-    {{-47_in, 0_in}, fwd, DRIVE_SPEED}
+    {{-47_in, -2_in}, fwd, DRIVE_SPEED}
   },
     true);
   chassis.pid_wait_quick();
 
+  chassis.pid_turn_set({-47, 20.5}, rev, DRIVE_SPEED);
+  chassis.pid_wait_quick();
+
   // Grab goal
-  chassis.pid_odom_set(-34_in, DRIVE_SPEED);
-  chassis.pid_wait_until(-28);
+  chassis.pid_odom_set(-20_in, DRIVE_SPEED);
+  chassis.pid_wait_until(-18);
   goalGrab.set_value(1);
   chassis.pid_wait_quick();
 
   chassis.pid_odom_set({
-    {{-23.5_in, 23.5_in}, fwd, DRIVE_SPEED},
-    {{-23.5_in, 47_in}, fwd, DRIVE_SPEED},
-    {{0_in, 57_in}, fwd, DRIVE_SPEED},
+    {{-24.5_in, 25.5_in}, fwd, DRIVE_SPEED}, // Grab ring 1
+    {{28_in, 50_in}, fwd, DRIVE_SPEED}, // Grab far ring 2
+    {{5_in, 40_in}, fwd, DRIVE_SPEED}, // Wall line up
+    {{5.9_in, 64_in}, fwd, DRIVE_SPEED}, // Wall fwd, maybe go less here for better scoring
   },
-    true);
+  true);
+  chassis.pid_wait_until_index_started(2);
+  utils::antiJam(false);
+
+  liftPID.target_set(liftLoad);
   chassis.pid_wait_quick();
 
-  // Face wall stake
-  chassis.pid_turn_set({0, 69}, fwd, TURN_SPEED);
-  chassis.pid_wait_quick();
+  pros::delay(500);
 
-  // <Score wall stake here>
+  utils::set_intake(0);
+
+  liftPID.target_set(liftScore);
+
+  pros::delay(500);
+
+  // go fwd to try and score ring on wall stake
+  chassis.pid_odom_set(4, 30);
+  chassis.pid_wait_quick();
 
   chassis.pid_odom_set({
-    {{0_in, 47_in}, rev, DRIVE_SPEED}, // Back up from wall stake
-    {{-59_in, 47_in}, fwd, DRIVE_SPEED}, // Grab 3 rings
-    {{-47_in, 59_in}, fwd, DRIVE_SPEED}, // Grab 4th ring
-    {{-62_in, 61_in}, rev, DRIVE_SPEED}, // Back into goal place
+    {{4_in, 45_in}, rev, DRIVE_SPEED}, // Back up from wall stake
+    {{-24_in, 52_in}, fwd, DRIVE_SPEED}, // Line up for 3 rings
+    {{-60_in, 52_in}, fwd, DRIVE_SPEED/2}, // Grab 3 rings
+    {{-44_in, 62_in}, fwd, DRIVE_SPEED/2}, // Grab 4th ring
+    {{-65_in, 65_in}, rev, DRIVE_SPEED/2}, // Back into goal place
   },
-    true);
+  true);
+  chassis.pid_wait_until_index(0);
+  utils::set_intake(127);
+  liftPID.target_set(0);
+  utils::antiJam(true);
   chassis.pid_wait_quick();
 
   goalGrab.set_value(0);
 
   chassis.pid_odom_set({
-    {{-23.5_in, 47_in}, fwd, DRIVE_SPEED}, // Back up from wall stake
+    {{4_in, 50_in}, fwd, DRIVE_SPEED}, // Back up from wall stake
   }, true);
   chassis.pid_wait_quick();
 }
 
 void skillsv5_3() {
+
+  liftPID.target_set(liftLoad);
   
   chassis.pid_odom_set({
-    {{23.5_in, 23.5_in}, fwd, DRIVE_SPEED}, // Back up from wall stake
+    {{23.5_in, 23.5_in}, fwd, DRIVE_SPEED}, // Goto ring 1
+    {{42_in, 4.5_in}, rev, DRIVE_SPEED}, // Goto goal
   }, true);
   chassis.pid_wait_quick();
 
-  chassis.pid_turn_set({41, 3.5}, rev, TURN_SPEED);
-  chassis.pid_wait_quick();
+  utils::set_intake(0);
 
-  chassis.pid_odom_set(-34_in, DRIVE_SPEED);
-  chassis.pid_wait_until(-28);
+  // chassis.pid_turn_set({42, 4.5}, rev, TURN_SPEED);
+  // chassis.pid_wait_quick();
+
+  chassis.pid_odom_set(-38_in, DRIVE_SPEED);
+  chassis.pid_wait_until(-36);
   goalGrab.set_value(1);
   chassis.pid_wait_quick();
 
@@ -466,7 +502,7 @@ void skillsv5_3() {
 
   chassis.pid_odom_set({
     {{48.5_in, 0_in}, rev, DRIVE_SPEED}, // 0 - Backup from wall
-    {{47_in, 47_in}, fwd, DRIVE_SPEED/3}, // 1 - Grab red right
+    {{47.5_in, 47_in}, fwd, DRIVE_SPEED/3}, // 1 - Grab red right
     {{11_in, 12_in}, fwd, DRIVE_SPEED}, // 2 - Goto ladder
     {{0_in, 0_in}, fwd, DRIVE_SPEED}, // 3 - Under ladder
   }, true);

@@ -19,6 +19,8 @@ void default_constants();
 void none();
 void cali();
 
+void off_line();
+
 void intakeBreak();
 void turn(bool flipped, int degrees);
 void swing(bool flipped, int degrees, int speed);
