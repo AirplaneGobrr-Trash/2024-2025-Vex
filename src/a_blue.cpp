@@ -164,7 +164,7 @@ void auton::blue::pos() {
 
   liftPID.target_set(liftScoreMain + 2000);
 
-  chassis.pid_drive_set(44_in, DRIVE_SPEED / 2);
+  chassis.pid_drive_set(46_in, DRIVE_SPEED / 2);
   chassis.pid_wait_until(8_in);
   utils::set_intake(0);
   chassis.pid_wait();
@@ -190,8 +190,8 @@ void auton::blue::neg() {
   utils::set_intake(127);
 
   chassis.pid_odom_set({
-    {{6.2_in, 38_in}, fwd, DRIVE_SPEED/2}, // grab ring 1
-    {{6.2_in, 64_in}, fwd, DRIVE_SPEED/2}, // grab ring 2
+    {{5.8_in, 38_in}, fwd, DRIVE_SPEED/2}, // grab ring 1
+    {{5.8_in, 64_in}, fwd, DRIVE_SPEED/2}, // grab ring 2
     {{7_in, 40_in}, rev, DRIVE_SPEED}, // Go back
     {{7.5_in, 35_in}, rev, DRIVE_SPEED}, // Go back
     {{12_in, 30_in}, rev, DRIVE_SPEED}, // go back more

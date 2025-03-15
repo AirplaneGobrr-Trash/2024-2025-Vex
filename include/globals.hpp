@@ -42,9 +42,9 @@ extern pros::adi::DigitalIn autonButton;
 // Load rings into the two bar
 inline int liftLoad = 5000;
 // Ring loaded just above the og load pos, nice for having a ring loaded but the intake be able to load on goals still
-inline int liftRingBypass = 7300;
+inline int liftRingBypass = 8500;
 
 // Score ring onto colored wall stake
 inline int liftScoreMain = 15500;
 // Score ring onto wall stake
-inline int liftScore = 21000;
+inline int liftScore = 19500;
