@@ -117,21 +117,25 @@ void auton::red::neg(){
   chassis.pid_odom_set({
     {{-27_in, 51.5_in}, fwd, DRIVE_SPEED}, // grab ring 3
     {{-20_in, 35_in}, rev, DRIVE_SPEED}, // go back
-    {{-54_in, 39_in}, fwd, 127}, // goto wall
+    //{{-45_in, 35_in}, fwd, 127}, // goto wall
     {{-64_in, 69_in}, fwd, 127}, // grab ring 4
     {{-43_in, 35_in}, rev, DRIVE_SPEED}, // backup terry!
   }, true);
+  chassis.pid_wait_until_index_started(5);
+  
+  intakeLift.set_value(1);
+  chassis.pid_wait_quick();
+  
+  chassis.pid_odom_set(-12_in, DRIVE_SPEED);
   chassis.pid_wait_quick();
 
-  intakeLift.set_value(1);
-
   chassis.pid_odom_set({
-    {{-43_in, 0_in}, fwd, DRIVE_SPEED}, // goto ring 5
+    {{-42_in, 0_in}, fwd, DRIVE_SPEED}, // goto ring 5
   },
   true);
   chassis.pid_wait_quick();
 
-  chassis.pid_turn_set({-25.5, -1.5}, fwd, DRIVE_SPEED);
+  chassis.pid_turn_set({-25.5, 3}, fwd, DRIVE_SPEED);
   chassis.pid_wait_quick();
 
   pros::delay(250);
@@ -141,6 +145,7 @@ void auton::red::neg(){
   chassis.pid_wait_quick();
 
   utils::set_intake(0);
+  ringGrab.set_value(1);
 }
 
 void neg2g() {

@@ -135,9 +135,9 @@ void utils::antiJam(bool on) {
 }
 
 void utils::intake_task() {
-  const int wait_time = 30;
+  const int wait_time = 50;
   const int outtake_time = 250;
-  const int min_speed = 10;  // minimum speed to move the intake
+  const int min_speed = 20;  // minimum speed to move the intake
   int jam_counter = 0;
   bool is_jammed = false;
   bool is_red = false;

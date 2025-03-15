@@ -10,7 +10,7 @@
 #include "a_skills.hpp"
 
 // These are out of 127
-inline int DRIVE_SPEED = 115;
+inline int DRIVE_SPEED = 110;
 inline int TURN_SPEED = 90;
 inline int SWING_SPEED = 90;
 

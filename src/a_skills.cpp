@@ -220,8 +220,8 @@ void skillsv4_3() {
 
   utils::set_intake(127);
 
-  chassis.pid_drive_set(36_in, DRIVE_SPEED);
-  chassis.pid_wait_quick_chain();
+  // chassis.pid_drive_set(36_in, DRIVE_SPEED);
+  // chassis.pid_wait_quick_chain();
 
   chassis.pid_turn_set(135, TURN_SPEED);
   chassis.pid_wait_quick_chain();
@@ -414,7 +414,7 @@ void skillsv5_1() {
 void skillsv5_2() {
   // go fwd to goal cus stupid thing
   chassis.pid_odom_set({
-    {{-47_in, -2_in}, fwd, DRIVE_SPEED}
+    {{-43_in, -2_in}, fwd, DRIVE_SPEED}
   },
     true);
   chassis.pid_wait_quick();
@@ -470,7 +470,7 @@ void skillsv5_2() {
   goalGrab.set_value(0);
 
   chassis.pid_odom_set({
-    {{10_in, 60_in}, fwd, DRIVE_SPEED}, // Back up from wall stake
+    {{15_in, 60_in}, fwd, DRIVE_SPEED}, // Back up from wall stake
   }, true);
   chassis.pid_wait_quick();
 }
@@ -484,11 +484,14 @@ void skillsv5_3() {
   chassis.pid_odom_set({
     {{30_in, 33.5_in}, fwd, DRIVE_SPEED}, // Goto ring 1
     {{36_in, 21_in}, fwd, DRIVE_SPEED}, // Goto ring 1
-    {{55_in, 0_in}, rev, DRIVE_SPEED}, // Goto goal
+    {{60_in, 0_in}, rev, DRIVE_SPEED}, // Goto goal
   }, true);
+
+  chassis.pid_wait_until_index_started(2);
+  utils::set_intake(0);
+
   chassis.pid_wait_quick();
 
-  utils::set_intake(0);
 
   // chassis.pid_turn_set({42, 4.5}, rev, TURN_SPEED);
   // chassis.pid_wait_quick();
@@ -503,7 +506,7 @@ void skillsv5_3() {
   chassis.pid_odom_set(10_in, DRIVE_SPEED);
   chassis.pid_wait_quick();
 
-  chassis.pid_turn_set({64, 0}, fwd, TURN_SPEED);
+  chassis.pid_turn_set({80, -10}, fwd, TURN_SPEED);
   chassis.pid_wait_quick();
 
   // <Score colored ring here>
@@ -524,7 +527,7 @@ void skillsv5_3() {
     {{48.5_in, 0_in}, rev, DRIVE_SPEED}, // 0 - Backup from wall
     {{60_in, 54_in}, fwd, DRIVE_SPEED/2}, // 1 - Grab red right
     {{25_in, 17_in}, fwd, DRIVE_SPEED}, // 2 - Goto ladder
-    {{0_in, 7_in}, fwd, DRIVE_SPEED}, // 3 - Under ladder
+    {{17_in, 5_in}, fwd, DRIVE_SPEED}, // 3 - Under ladder
   }, true);
   chassis.pid_wait_until_index_started(2);
   utils::set_intake(0);
@@ -532,19 +535,16 @@ void skillsv5_3() {
   utils::set_intake(127);
   chassis.pid_wait_quick();
 
-  chassis.pid_turn_set({23.5, -23.5}, fwd, TURN_SPEED);
-  chassis.pid_wait_quick();
-
   utils::set_intake(127);
 
   chassis.pid_odom_set({
     {{23.5_in, -23.5_in}, fwd, DRIVE_SPEED}, // 0 
-    {{49_in, -49_in}, fwd, DRIVE_SPEED/2}, // 1
-    {{47.5_in, -59_in}, fwd, DRIVE_SPEED/2}, // 1
-    {{47.5_in, -47_in}, rev, DRIVE_SPEED/2}, // 1
-    {{59_in, -47.5_in}, fwd, DRIVE_SPEED/2}, // 1
-    {{47.5_in, -47_in}, rev, DRIVE_SPEED/2}, // 1
-    {{63_in, -63_in}, rev, DRIVE_SPEED/2}, // 1
+    {{64_in, -47_in}, fwd, DRIVE_SPEED/2}, // 1
+    {{57_in, -64_in}, fwd, DRIVE_SPEED/2}, // 1
+    {{61_in, -44_in}, rev, DRIVE_SPEED/2}, // 1
+    {{65_in, -64_in}, fwd, DRIVE_SPEED/2}, // 1
+    {{61_in, -44_in}, rev, DRIVE_SPEED/2}, // 1
+    {{67_in, -63_in}, rev, DRIVE_SPEED/2}, // 1
   }, true);
   chassis.pid_wait_quick();
 
@@ -560,7 +560,8 @@ void skillsv5_3() {
 void auton::skills::skillsv5() {
   skillsv5_1();
   skillsv5_2();
-  skillsv5_3();
+  // skillsv5_3();
+  skillsv4_3();
 }
 
 void auton::skills::skillsv4() {
